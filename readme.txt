@@ -3,14 +3,16 @@ Contributors: alanft
 Tags: widget, admin, conditional tags
 Requires at least: 2.1
 Tested up to: 2.3.2
-Stable tag: 0.2
+Stable tag: 0.3
 
-Widget Logic lets you add 'conditional tags' logic from the usual widget admin interface. It also adds a 'widget_content' filter.
+Widget Logic lets you add 'conditional tags' logic from the usual widget admin interface. It optionally adds a 'widget_content' filter.
 
 == Description ==
 This plugin gives every widget (even widgets lacking controls) an extra control called "Widget logic".
 
 This text field allows you to specify any WP conditional tags logic to set when the widget appears. Use any standard [Conditional Tags](http://codex.wordpress.org/Conditional_Tags) and even combine them.
+
+There is also an option to add a wordpress 'widget_content' filter for you to tweak standard widgets to suit your theme.
 
 == Installation ==
 
@@ -33,6 +35,7 @@ I've tested it looks OK on Safari, Firefox and even PC IE6. But let me know what
 == Screenshots ==
 
 1. The 'Widget logic' field at work in a widget I use.
+2. The 'widget_content' filter option is at the foot of the widget admin page. (Off by default.)
 
 == Writing Logic Code ==
 
@@ -53,13 +56,13 @@ Note the use of ';' where there is an explicit 'return'.
 
 To filter widget contents use:
 
-	`add_filter('widget_content', 'your_filter_function' , $priority ,2);`
+	`add_filter('widget_content', 'your_filter_function' , [priority] ,2);`
 
-your function should take 2 parameters (hence that final 2) like this:
+your function can take 2 parameters (hence that final 2) like this:
 
 	`function your_filter_function($content='', $widget_id='')`
 
-The widget_id parameter allows you to target specific widgets. As an example here is a function I use to render all widget titles with the excellent ttftext plugin:
+The second parameter (widget_id) allows you to target specific widgets. As an example here is a function I use to render all widget titles with the excellent ttftext plugin:
 
 `function ttftext_widget_tite($content='', $widget_id='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches))

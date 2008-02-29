@@ -32,20 +32,41 @@ function widget_logic_add_control()
 
 	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
 
-	?><script><?	
+	?><script>
+		function insert_control(id,value)
+		{	nc = document.createElement("p");
+			nc.innerHTML="<label for='" + id + "-widget_logic'>Widget logic <input type='text' name='" + id + "-widget_logic' id='" + id + "-widget_logic' value='" + value + "' /></label>";
+			document.getElementById(id + "control").getElementsByTagName("div").item(0).appendChild(nc);
+		}
+	<?	
 	foreach ( $wp_registered_widget_controls as $name => $widget )
 	{	$id=$widget['id'];
+
 		if (isset($_POST[$id.'-widget_logic']))
 		{	$wl_options[$id]=$_POST[$id.'-widget_logic'];
 			update_option('widget_logic', $wl_options);
 		}
-		
-		?>	nc = document.createElement("p");
-			nc.innerHTML="<label for='<? echo $id ?>'>Widget logic <input type='text' name='<? echo $id.'-widget_logic' ?>' value='<? echo $wl_options[$id] ?>' /></label>";
-			document.getElementById('<? echo $id."control" ?>').getElementsByTagName("div").item(0).appendChild(nc);
-		<?
+		echo "\n\t\tinsert_control('".$id."', '".htmlspecialchars(stripslashes($wl_options[$id]),ENT_QUOTES)."');";
 	}
-	?></script><?
+	echo "\n\t</script>\n\t";
+
+
+	if ( isset($_POST['widget_logic-options-submit']) )
+	{	$wl_options['widget_logic-options-filter']=$_POST['widget_logic-options-filter'];
+		update_option('widget_logic', $wl_options);
+	}
+	?><div class="wrap">
+		<form method="POST">
+			<h2>Widget Logic options</h2>
+			<p style="line-height: 30px;">
+			<label for="widget_logic-options-filter">Use 'widget_content' filter?
+			<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <? echo $wl_options['widget_logic-options-filter'] ?> /></label>
+			<span class="submit"><input type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" value="Save" /></span></p>
+		</form>
+	</div>
+	<?php
+
+
 }
 
 
@@ -71,14 +92,18 @@ function widget_logic_redirected_callback()
 	$wl_options = get_option('widget_logic');						// do we want the widget?
 	$wl_value=($wl_options[$id])?stripslashes($wl_options[$id]):"true";
 	$wl_value=(stristr($wl_value, "return"))?$wl_value:"return ".$wl_value.";";
-	$wl_value=(eval($wl_value) && is_callable($callback));
 
+	$wl_value=(eval($wl_value) && is_callable($callback));
 	if ( $wl_value )
-	{	ob_start();
-		call_user_func_array($callback, $params);		// if so callback with original params!
-		$widget_content = ob_get_contents();
-		ob_end_clean();
-		echo apply_filters( 'widget_content', $widget_content, $id);
+	{	if ($wl_options['widget_logic-options-filter']!='checked')
+			call_user_func_array($callback, $params);		// if so callback with original params!
+		else
+		{	ob_start();
+			call_user_func_array($callback, $params);		// if so callback with original params!
+			$widget_content = ob_get_contents();
+			ob_end_clean();
+			echo apply_filters( 'widget_content', $widget_content, $id);
+		}
 	}
 }
 
