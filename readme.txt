@@ -32,7 +32,7 @@ I've tested it looks OK on Safari, Firefox and even PC IE6. But let me know what
 
 == Screenshots ==
 
-1. screenshot-1.png Shows the 'Widget logic' field at work in a widget I use.
+1. The 'Widget logic' field at work in a widget I use.
 
 == Writing Logic Code ==
 
