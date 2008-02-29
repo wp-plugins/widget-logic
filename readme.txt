@@ -3,7 +3,7 @@ Contributors: alanft
 Tags: widget, admin, conditional tags
 Requires at least: 2.1
 Tested up to: 2.3.2
-Stable tag: 0.1
+Stable tag: 0.2
 
 Widget Logic lets you add 'conditional tags' logic from the usual widget admin interface. It also adds a 'widget_content' filter.
 
