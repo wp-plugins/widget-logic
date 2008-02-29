@@ -8,9 +8,9 @@ Stable tag: 0.2
 Widget Logic lets you add 'conditional tags' logic from the usual widget admin interface. It also adds a 'widget_content' filter.
 
 == Description ==
-This plugin gives every widget (even widgets lacking controls) an extra control called "Widgets logic".
+This plugin gives every widget (even widgets lacking controls) an extra control called "Widget logic".
 
-This text field allows you to specify any wp conditional tags logic to set when the widget appears. Use any standard [Conditional Tags](http://codex.wordpress.org/Conditional_Tags) and even combine them.
+This text field allows you to specify any WP conditional tags logic to set when the widget appears. Use any standard [Conditional Tags](http://codex.wordpress.org/Conditional_Tags) and even combine them.
 
 == Installation ==
 
@@ -45,6 +45,26 @@ Examples:
 *	is\_home()
 *	is\_category(5)
 *	is\_home() || is\_category(5)
-*	x=(1==1)?true:false; return ( !is_home && x);
+*	$x=(1==1)?true:false; return ( !is_home && $x);
 
 Note the use of ';' where there is an explicit 'return'.
+
+== The 'widget_content' filter ==
+
+To filter widget contents use:
+
+	`add_filter('widget_content', 'your_filter_function' , $priority ,2);`
+
+your function should take 2 parameters (hence that final 2) like this:
+
+	`function your_filter_function($content='', $widget_id='')`
+
+The widget_id parameter allows you to target specific widgets. As an example here is a function I use to render all widget titles with the excellent ttftext plugin:
+
+`function ttftext_widget_tite($content='', $widget_id='')
+{	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches))
+	$heading=$matches[1];
+	$insert_img=the_ttftext( $heading, false );
+	$content=preg_replace("/(<h2[^>]*>)[^<]+/","$1$insert_img",$content,1);
+	return $content;
+}`
