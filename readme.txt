@@ -5,10 +5,10 @@ Requires at least: 2.1
 Tested up to: 2.3.2
 Stable tag: 0.1
 
-Make all widgets conditional. Widget Logic lets you add wp 'conditional tags' logic to all registered widgets - eg "is_home()" or "is_category(5) || is_single()" - all from the usual widget admin interface.
+Widget Logic lets you add 'conditional tags' logic from the usual widget admin interface. It also adds a 'widget_content' filter.
 
 == Description ==
-This plugin gives every widget (even widget's lacking controls) an extra control called "Widgets logic".
+This plugin gives every widget (even widgets lacking controls) an extra control called "Widgets logic".
 
 This text field allows you to specify any wp conditional tags logic to set when the widget appears. Use any standard [Conditional Tags](http://codex.wordpress.org/Conditional_Tags) and even combine them.
 
@@ -32,7 +32,7 @@ I've tested it looks OK on Safari, Firefox and even PC IE6. But let me know what
 
 == Screenshots ==
 
-1. screenshot-1.png Shows you the Widget Logic field in the Search widget.
+1. The 'Widget logic' field at work in a widget I use.
 
 == Writing Logic Code ==
 
