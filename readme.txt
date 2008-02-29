@@ -41,9 +41,10 @@ The text you write in the 'Widget logic' field can currently be full PHP code so
 If there is no 'return' in the text, there is an implicit 'return ' added on the start and a ';' on the end.
 
 Examples:
-* is_home()
-* is_category(5)
-* is_home() || is_category(5)
-* x=(1==1)?true:false; return ( !is_home && x);
+
+*	is\_home()
+*	is\_category(5)
+*	is\_home() || is\_category(5)
+*	x=(1==1)?true:false; return ( !is_home && x);
 
 Note the use of ';' where there is an explicit 'return'.
