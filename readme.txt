@@ -1,11 +1,11 @@
 === Widget Logic ===
 Contributors: alanft
-Tags: widget, admin, conditional tags
+Tags: widget, admin, conditional tags, filter
 Requires at least: 2.1
 Tested up to: 2.3.2
 Stable tag: 0.3
 
-Widget Logic lets you add 'conditional tags' logic from the usual widget admin interface. It optionally adds a 'widget_content' filter.
+Widget Logic lets you control when widgets appear. Add WP's conditional tags in the normal widget admin. It also adds a 'widget_content' filter.
 
 == Description ==
 This plugin gives every widget (even widgets lacking controls) an extra control called "Widget logic".
@@ -39,35 +39,55 @@ I've tested it looks OK on Safari, Firefox and even PC IE6. But let me know what
 
 == Writing Logic Code ==
 
-The text you write in the 'Widget logic' field can currently be full PHP code so long as it returns 'true' when you need the widget to appear - note that you need terminating ';'s.
+The text in the 'Widget logic' field can currently be full PHP code. The code should return 'true' when you need the widget to appear.
 
-If there is no 'return' in the text, there is an implicit 'return ' added on the start and a ';' on the end.
+It is important to include terminating ';'s. If there is no 'return' in the text, an implicit 'return' is added to the start and a final ';' is also added.
 
 Examples:
 
 *	is\_home()
 *	is\_category(5)
 *	is\_home() || is\_category(5)
-*	$x=(1==1)?true:false; return ( !is_home && $x);
+*	is\_page('about')
+*	$x=(1==1)?true:false; return ( !is_home() && $x);
 
 Note the use of ';' where there is an explicit 'return'.
 
 == The 'widget_content' filter ==
 
-To filter widget contents use:
+This now needs to be explicitly activated on the widget admin page. To filter widget contents in your themes functions, or in other plugins, use:
 
-	`add_filter('widget_content', 'your_filter_function' , [priority] ,2);`
+`add_filter('widget_content', 'your_filter_function', [priority], 2);`
 
 your function can take 2 parameters (hence that final 2) like this:
 
-	`function your_filter_function($content='', $widget_id='')`
+`function your_filter_function($content='', $widget_id='')`
 
-The second parameter (widget_id) allows you to target specific widgets. As an example here is a function I use to render all widget titles with the excellent ttftext plugin:
+The second parameter (widget_id) can be used to target specific widgets if needed.
 
-`function ttftext_widget_tite($content='', $widget_id='')
+_Example filters_
+
+This adds the widget_id to the foot of every widget:
+
+`function reveal_widget_id($content='', $widget_id='')
+{	return $content."id=".$widget_id;	}`
+
+I added this filter in order to render all widget titles with the excellent [ttftext plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
+
+`function ttftext_widget_title($content='', $widget_id='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches))
 	$heading=$matches[1];
 	$insert_img=the_ttftext( $heading, false );
 	$content=preg_replace("/(<h2[^>]*>)[^<]+/","$1$insert_img",$content,1);
+	return $content;
+}`
+
+I add a 'all comments' RSS link to the [Brian's Latest Comments Widget](http://www.4null4.de/142/sidebar-widget-brians-latest-comments/) with this:
+
+`function blc_add_rss_feed($content='', $widget_id='')
+{	if ($widget_id=='brians-latest-comments')
+	{	$insert_rss='<a href="./comments/feed/" title="Feed of all comments"><img src="' . get_bloginfo('template_url') . '/images/rss.gif" alt="rss" /></a>';
+		$content=str_replace("</h2>",$insert_rss."</h2>",$content);
+	}
 	return $content;
 }`
