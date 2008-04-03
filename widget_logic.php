@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Allows widgets to appear as directed by WP tags is_home etc
 Author: Alan Trewartha
-Version: 0.3
+Version: 0.31
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
