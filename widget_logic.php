@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Widget Logic
-Plugin URI: http://freakytrigger.co.uk/
+Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Allows widgets to appear as directed by WP tags is_home etc
 Author: Alan Trewartha
 Version: 0.3
@@ -38,7 +38,7 @@ function widget_logic_add_control()
 			nc.innerHTML="<label for='" + id + "-widget_logic'>Widget logic <input type='text' name='" + id + "-widget_logic' id='" + id + "-widget_logic' value='" + value + "' /></label>";
 			document.getElementById(id + "control").getElementsByTagName("div").item(0).appendChild(nc);
 		}
-	<?	
+	<?php	
 	foreach ( $wp_registered_widget_controls as $name => $widget )
 	{	$id=$widget['id'];
 
@@ -60,7 +60,7 @@ function widget_logic_add_control()
 			<h2>Widget Logic options</h2>
 			<p style="line-height: 30px;">
 			<label for="widget_logic-options-filter">Use 'widget_content' filter?
-			<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <? echo $wl_options['widget_logic-options-filter'] ?> /></label>
+			<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-filter'] ?> /></label>
 			<span class="submit"><input type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" value="Save" /></span></p>
 		</form>
 	</div>
