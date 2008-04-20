@@ -2,8 +2,8 @@
 Contributors: alanft
 Tags: widget, admin, conditional tags, filter
 Requires at least: 2.1
-Tested up to: 2.3.2
-Stable tag: 0.31
+Tested up to: 2.5
+Stable tag: 0.4
 
 Widget Logic lets you control when widgets appear. Add WP's conditional tags in the normal widget admin. It also adds a 'widget_content' filter.
 
@@ -13,6 +13,11 @@ This plugin gives every widget (even widgets lacking controls) an extra control 
 This text field allows you to specify any WP conditional tags logic to set when the widget appears. Use any standard [Conditional Tags](http://codex.wordpress.org/Conditional_Tags) and even combine them.
 
 There is also an option to add a wordpress 'widget_content' filter for you to tweak standard widgets to suit your theme.
+
+= Version HIstory =
+0.4 - Brings WP 2.5 compatibility. I am trying to make it back compatible. If you have trouble using WL with WP 2.1--2.3 let me know the issue.
+
+0.31 - Last WP 2.3 only version
 
 == Installation ==
 
@@ -28,13 +33,15 @@ The logic text on one of your widgets may be invalid PHP.
 
 = The 'Widget Logic' field is missing or appears elsewhere =
 
-The plugin uses a tiny bit of javascript to get the field into position on the admin page. As the widget admin uses JS, I feel this is no imposition. However it might mean that your browser dislikes the DOM tricks that the JS code adopts.
+The plugin uses a tiny bit of javascript* to get the field into position on the admin page. As the widget admin uses JS, I feel this is no imposition. However it might mean that your browser dislikes the DOM tricks that the JS code adopts.
 
 I've tested it looks OK on Safari, Firefox and even PC IE6. But let me know what browser you are using and I'll see what I can do.
 
+*As of version 0.4 this is no longer the case.
+
 == Screenshots ==
 
-1. The 'Widget logic' field at work in a widget I use.
+1. The 'Widget logic' field at work in a widget I use. (Must update the screenshot to a 2.5 version)
 2. The 'widget_content' filter option is at the foot of the widget admin page. (Off by default.)
 
 == Writing Logic Code ==
