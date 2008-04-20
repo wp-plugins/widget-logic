@@ -12,6 +12,7 @@ Author URI: http://freakytrigger.co.uk/author/alan/
 
 // re-wire the registered control functions to go via widget_logic_extra_control
 add_action( 'sidebar_admin_setup', 'widget_logic_expand_control'); 
+
 function widget_logic_expand_control()
 {	global $wp_registered_widgets, $wp_registered_widget_controls, $wp_version;
 
@@ -37,7 +38,6 @@ function widget_logic_expand_control()
 	}
 	update_option('widget_logic', $wl_options);
 
-//	print_r($wp_registered_widget_controls);
 }
 function widget_logic_empty_control() {}
 
@@ -50,10 +50,18 @@ function widget_logic_extra_control()
 	else
 		$id=array_pop($params);	
 
-	$callback=$wp_registered_widget_controls[$id]['callback_wl_redirect'];
+	if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) )
+	{	foreach ( $wp_registered_widget_controls as $name => $control )
+		{	if ( is_callable( $control['callback_wl_redirect'] ) )
+				call_user_func_array( $control['callback_wl_redirect'], $control['params'] );
+		}
+	}
+	else
+	{	$callback=$wp_registered_widget_controls[$id]['callback_wl_redirect'];
 
-	if (is_callable($callback))
-		call_user_func_array($callback, $params);		// go to the original control function
+		if (is_callable($callback))
+			call_user_func_array($callback, $params);		// go to the original control function
+	}
 
 	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
 	
