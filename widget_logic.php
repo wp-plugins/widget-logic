@@ -4,40 +4,52 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.40
+Version: 0.42
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
 
 
-// re-wire the registered control functions to go via widget_logic_extra_control
 add_action( 'sidebar_admin_setup', 'widget_logic_expand_control'); 
 
 function widget_logic_expand_control()
-{	global $wp_registered_widgets, $wp_registered_widget_controls, $wp_version;
+{	global $wp_registered_widgets, $wp_registered_widget_controls;
 
 	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
+	//print_r($wl_options);
 
-	foreach ( $wp_registered_widgets as $id => $widget )
-	{	if (!$wp_registered_widget_controls[$id])
-				register_widget_control($widget['name'], 'widget_logic_empty_control', 250,61);
-				
-		if (is_array($wp_registered_widget_controls[$id]['params'][0]))
-		{	
-			$wp_registered_widget_controls[$id]['params'][0]['id_for_wl']=$id;
-		}
-		else
-		{	array_push($wp_registered_widget_controls[$id]['params'],$id);	
-			$wp_registered_widget_controls[$id]['height']+=40;
-		}
-			
-		$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
-		$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';		
-
-		if (isset($_POST[$id.'-widget_logic']))
-			$wl_options[$id]=$_POST[$id.'-widget_logic'];
+	// if we're just updating the widgets, just read in the widget logic settings - makes this WP2.5+ only i think
+	if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) )
+	{	foreach ( (array) $_POST['widget-id'] as $widget_number => $widget_id )
+			$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
+		
+		// clean up empty options (in PHP5 use array_intersect_key)
+		foreach (array_keys($wl_options) as $key)
+			if (!in_array($key, array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']))))
+				unset($wl_options[$key]);
 	}
 
+	else
+	// re-wire the registered control functions to go via widget_logic_extra_control
+	{	foreach ( $wp_registered_widgets as $id => $widget )
+		{	if (!$wp_registered_widget_controls[$id])
+					register_widget_control($widget['name'], 'widget_logic_empty_control', 250,61);
+					
+			if (!array_key_exists(0,$wp_registered_widget_controls[$id]['params'])  || is_array($wp_registered_widget_controls[$id]['params'][0]))
+				$wp_registered_widget_controls[$id]['params'][0]['id_for_wl']=$id;
+			else
+			{	// some older widgets put number in to params directly (which messes up the 'templates' in WP2.5)
+				array_push($wp_registered_widget_controls[$id]['params'],$id);	
+				$wp_registered_widget_controls[$id]['height']+=40;					// this is really a pre2.5 thing - discard?
+			}
+
+			// do the redirection
+			$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
+			$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';		
+		}
+	}
+	
+	// check the 'widget content' filter option
 	if ( isset($_POST['widget_logic-options-submit']) )
 		$wl_options['widget_logic-options-filter']=$_POST['widget_logic-options-filter'];
 
@@ -66,36 +78,33 @@ function widget_logic_options_filter()
 function widget_logic_empty_control() {}
 
 function widget_logic_extra_control()
-{	global $wp_registered_widget_controls, $wp_version;
+{	global $wp_registered_widget_controls;
 	$params=func_get_args();
 
+	// find the widget id that we have sneaked into the params
 	$id=(is_array($params[0]))?$params[0]['id_for_wl']:array_pop($params);	
-	
-	if ( ('post' == strtolower($_SERVER['REQUEST_METHOD'])) && version_compare($wp_version, '2.5', ">="))
-	{	foreach ( $wp_registered_widget_controls as $name => $control )
-			if ( is_callable( $control['callback_wl_redirect'] ) )
-				call_user_func_array( $control['callback_wl_redirect'], $control['params'] );
-	}
-	else
-	{	$callback=$wp_registered_widget_controls[$id]['callback_wl_redirect'];
-		if (is_callable($callback))
-			call_user_func_array($callback, $params);		// go to the original control function
-	}
+	$id_disp=$id;
 
 	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
+	
+	$callback=$wp_registered_widget_controls[$id]['callback_wl_redirect'];
+	if (is_callable($callback))
+		call_user_func_array($callback, $params);		// go to the original control function
 
-	$id_disp=$id;
 	$value=htmlspecialchars(stripslashes($wl_options[$id]),ENT_QUOTES);
+
+	// dealing with multiple widgets - get the number. if -1 this is the 'template' for the admin interface
 	if (is_array($params[0]) && isset($params[0]['number'])) $number=$params[0]['number'];
 	if ($number==-1) {$number="%i%"; $value="";}
 	if (isset($number)) $id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
 
+	// output our extra widget logic field
 	echo "<p><label for='".$id_disp."-widget_logic'>Widget logic <input type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' value='".$value."' /></label></p>";
 
 }
 
 
-// intercept  registered widgets - redirect it and put its ID on the end of the params
+// intercept  registered widgets - redirect them and put each ID on the end of the params
 // perhaps there is a way to just intercept the ones that are used??
 add_action('wp_head', 'widget_logic_redirect_callback');
 function widget_logic_redirect_callback()
