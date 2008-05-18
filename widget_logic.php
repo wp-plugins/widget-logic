@@ -24,8 +24,9 @@ function widget_logic_expand_control()
 			$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
 		
 		// clean up empty options (in PHP5 use array_intersect_key)
+		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']));
 		foreach (array_keys($wl_options) as $key)
-			if (!in_array($key, array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']))))
+			if (!in_array($key, $regd_plus_new))
 				unset($wl_options[$key]);
 	}
 
