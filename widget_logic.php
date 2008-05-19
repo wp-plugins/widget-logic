@@ -34,7 +34,7 @@ function widget_logic_expand_control()
 	// re-wire the registered control functions to go via widget_logic_extra_control
 	{	foreach ( $wp_registered_widgets as $id => $widget )
 		{	if (!$wp_registered_widget_controls[$id])
-					register_widget_control($widget['name'], 'widget_logic_empty_control', 250,61);
+					wp_register_widget_control($id,$widget['name'], 'widget_logic_empty_control');
 					
 			if (!array_key_exists(0,$wp_registered_widget_controls[$id]['params'])  || is_array($wp_registered_widget_controls[$id]['params'][0]))
 				$wp_registered_widget_controls[$id]['params'][0]['id_for_wl']=$id;
