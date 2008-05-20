@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.42
+Version: 0.43
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -21,7 +21,8 @@ function widget_logic_expand_control()
 	// if we're just updating the widgets, just read in the widget logic settings - makes this WP2.5+ only i think
 	if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) )
 	{	foreach ( (array) $_POST['widget-id'] as $widget_number => $widget_id )
-			$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
+			if (isset($_POST[$widget_id.'-widget_logic']))
+				$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
 		
 		// clean up empty options (in PHP5 use array_intersect_key)
 		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']));
