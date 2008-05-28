@@ -14,7 +14,9 @@ The text field lets you use WP's [Conditional Tags](http://codex.wordpress.org/C
 
 There is also an option to add a wordpress 'widget_content' filter for you to tweak standard widgets to suit your theme.
 
-= Version HIstory =
+= Version History =
+0.43 - simple bug fix (form data was being lost when 'Cancel'ing widgets)
+
 0.42 - WP 2.5+ only now. WP's widget admin has changed so much and I was getting tied up in knots trying to make it work with them both.
 
 0.4 - Brings WP 2.5 compatibility. I am trying to make it back compatible. If you have trouble using WL with WP 2.1--2.3 let me know the issue.
