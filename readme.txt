@@ -42,7 +42,7 @@ The logic text on one of your widgets may be invalid PHP.
 
 == Screenshots ==
 
-1. The 'Widget logic' field at work in a widget I use.
+1. The 'Widget logic' field at work in standard widgets.
 2. The 'widget_content' filter option is at the foot of the widget admin page. (Off by default.)
 
 == Writing Logic Code ==
@@ -53,10 +53,10 @@ It is important to include terminating ';'s. If there is no 'return' in the text
 
 Examples:
 
-*	is\_home()
-*	is\_category(5)
-*	is\_home() || is\_category('baked-goods')
-*	is\_page('about')
+*	is_home()
+*	is_category(5)
+*	is_home() || is\_category('baked-goods')
+*	is_page('about')
 *	$x=(1==1)?true:false; return ( !is_home() && $x);
 
 Note the use of ';' where there is an explicit 'return'.
@@ -76,12 +76,10 @@ The second parameter (widget_id) can be used to target specific widgets if neede
 _Example filters_
 
 This adds the widget_id to the foot of every widget:
-
 `function reveal_widget_id($content='', $widget_id='')
 {	return $content."id=".$widget_id;	}`
 
 I was motivated to make this filter in order to render all widget titles with the excellent [ttftext plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
-
 `function ttftext_widget_title($content='', $widget_id='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches))
 	$heading=$matches[1];
@@ -91,7 +89,6 @@ I was motivated to make this filter in order to render all widget titles with th
 }`
 
 I add an 'all comments' RSS link to the [Brian's Latest Comments Widget](http://www.4null4.de/142/sidebar-widget-brians-latest-comments/) with this:
-
 `function blc_add_rss_feed($content='', $widget_id='')
 {	if ($widget_id=='brians-latest-comments')
 	{	$insert_rss='<a href="./comments/feed/" title="Feed of all comments"><img src="' . get_bloginfo('template_url') . '/images/rss.gif" alt="rss" /></a>';
