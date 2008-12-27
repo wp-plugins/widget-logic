@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.43
+Version: 0.44
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -127,7 +127,7 @@ function widget_logic_redirected_callback()
 	
 	$wl_options = get_option('widget_logic');							// do we want the widget?
 	$wl_value=($wl_options[$id])?stripslashes($wl_options[$id]):"true";
-	$wl_value=(stristr($wl_value, "return"))?$wl_value:"return ".$wl_value.";";
+	$wl_value=(stristr($wl_value, "return"))?$wl_value:"return (".$wl_value.");";
 
 	$wl_value=(eval($wl_value) && is_callable($callback));
 	if ( $wl_value )
