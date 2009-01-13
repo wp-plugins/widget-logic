@@ -3,7 +3,7 @@ Contributors: alanft
 Tags: widget, admin, conditional tags, filter
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 0.43
+Stable tag: 0.44
 
 Widget Logic lets you control when widgets appear. Add WP's conditional tags in the normal widget admin. It also adds a 'widget_content' filter.
 
@@ -15,6 +15,8 @@ The text field lets you use WP's [Conditional Tags](http://codex.wordpress.org/C
 There is also an option to add a wordpress 'widget_content' filter for you to tweak standard widgets to suit your theme.
 
 = Version History =
+0.44 - Officially works with 2.7 now. Documentation changes and minor bug fixes.
+
 0.43 - simple bug fix (form data was being lost when 'Cancel'ing widgets)
 
 0.42 - WP 2.5+ only now. WP's widget admin has changed so much and I was getting tied up in knots trying to make it work with them both.
@@ -61,6 +63,7 @@ Examples:
 *	`is_single() && in_category('baked-goods')`
 *	`is_page('about')`
 *	`current_user_can('level_10')`
+*	`global $post; return ((is_page('home') || ($post->post_parent=="13"));`
 
 Note the use of ';' where there is an explicit 'return'. Use `||` (OR), `&&` (AND) and `!` (NOT) to make more complex conditions.
 
@@ -82,7 +85,7 @@ This adds the widget_id to the foot of every widget:
 `function reveal_widget_id($content='', $widget_id='')
 {	return $content."id=".$widget_id;	}`
 
-I was motivated to make this filter in order to render all widget titles with the excellent [ttftext plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
+I was motivated to make this filter in order to render all widget titles with the excellent [ttftitles plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
 `function ttftext_widget_title($content='', $widget_id='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches);
 	$heading=$matches[1];
@@ -91,11 +94,9 @@ I was motivated to make this filter in order to render all widget titles with th
 	return $content;
 }`
 
-I add an 'all comments' RSS link to the [Brian's Latest Comments Widget](http://www.4null4.de/142/sidebar-widget-brians-latest-comments/) with this:
+I add an 'all comments' RSS link to the [Get Recent Comments](http://wordpress.org/extend/plugins/get-recent-comments/) with this:
 `function blc_add_rss_feed($content='', $widget_id='')
-{	if ($widget_id=='brians-latest-comments')
-	{	$insert_rss='<a href="./comments/feed/" title="Feed of all comments"><img src="' . get_bloginfo('template_url') . '/images/rss.gif" alt="rss" /></a>';
-		$content=str_replace("</h2>",$insert_rss."</h2>",$content);
-	}
-	return $content;
-}`
+{	$insert_rss='<a href="./comments/feed/" title="Feed of all our comments"><img src="' . get_bloginfo('template_url') . '/images/rss.gif" alt="rss" /></a>';
+	$content=str_replace("</h2>",$insert_rss."</h2>",$content);
+}
+`
