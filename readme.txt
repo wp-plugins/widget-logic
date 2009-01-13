@@ -82,10 +82,12 @@ The second parameter (widget_id) can be used to target specific widgets if neede
 _Example filters_
 
 This adds the widget_id to the foot of every widget:
+
 `function reveal_widget_id($content='', $widget_id='')
 {	return $content."id=".$widget_id;	}`
 
 I was motivated to make this filter in order to render all widget titles with the excellent [ttftitles plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
+
 `function ttftext_widget_title($content='', $widget_id='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches);
 	$heading=$matches[1];
@@ -94,7 +96,8 @@ I was motivated to make this filter in order to render all widget titles with th
 	return $content;
 }`
 
-I add an 'all comments' RSS link to the [Get Recent Comments](http://wordpress.org/extend/plugins/get-recent-comments/) with this:
+I add an 'all comments' RSS link to the [Get Recent Comments](http://wordpress.org/extend/plugins/get-recent-comments/) widget with this:
+
 `function blc_add_rss_feed($content='', $widget_id='')
 {	$insert_rss='<a href="./comments/feed/" title="Feed of all our comments"><img src="' . get_bloginfo('template_url') . '/images/rss.gif" alt="rss" /></a>';
 	$content=str_replace("</h2>",$insert_rss."</h2>",$content);
