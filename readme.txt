@@ -63,7 +63,7 @@ Examples:
 *	`is_single() && in_category('baked-goods')`
 *	`is_page('about')`
 *	`current_user_can('level_10')`
-*	`global $post; return ((is_page('home') || ($post->post_parent=="13"));`
+*	`global $post; return (is_page('home') || ($post->post_parent=="13"));`
 
 Note the use of ';' where there is an explicit 'return'. Use `||` (OR), `&&` (AND) and `!` (NOT) to make more complex conditions.
 

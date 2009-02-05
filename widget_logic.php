@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.44
+Version: 0.45
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -15,8 +15,7 @@ add_action( 'sidebar_admin_setup', 'widget_logic_expand_control');
 function widget_logic_expand_control()
 {	global $wp_registered_widgets, $wp_registered_widget_controls;
 
-	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
-	//print_r($wl_options);
+	if((!$wl_options = get_option('widget_logic')) || !is_array($wl_options) ) $wl_options = array();
 
 	// if we're just updating the widgets, just read in the widget logic settings - makes this WP2.5+ only i think
 	if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) )
@@ -63,7 +62,7 @@ add_action( 'sidebar_admin_page', 'widget_logic_options_filter');
 
 function widget_logic_options_filter()
 {
-	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
+	if((!$wl_options = get_option('widget_logic')) || !is_array($wl_options) ) $wl_options = array();
 	?><div class="wrap">
 		<form method="POST">
 			<h2>Widget Logic options</h2>
@@ -87,7 +86,7 @@ function widget_logic_extra_control()
 	$id=(is_array($params[0]))?$params[0]['id_for_wl']:array_pop($params);	
 	$id_disp=$id;
 
-	if(!$wl_options = get_option('widget_logic')) $wl_options = array();
+	if((!$wl_options = get_option('widget_logic')) || !is_array($wl_options) ) $wl_options = array();
 	
 	$callback=$wp_registered_widget_controls[$id]['callback_wl_redirect'];
 	if (is_callable($callback))
