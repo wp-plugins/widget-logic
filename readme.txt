@@ -63,7 +63,7 @@ Tighten up your definitions with PHPs 'logical AND' &&, for example:
 
 `is_single() && in_category('cheese')`
 
-Another source of confusion is the difference between the [Main Page and the front page] (http://codex.wordpress.org/Conditional_Tags#The_Main_Page)
+Another source of confusion is the difference between the [Main Page and the front page](http://codex.wordpress.org/Conditional_Tags#The_Main_Page)
 
 = How do I get a widget to appear both on a category page and on single posts within that category? =
 Again, take care with your conditional tags. There is both an `in_category` and `is_category` tag. One is used to tell if the 'current' post is IN a category, and the other is used to tell if the page showing IS for that category (same goes for tags etc). What you want is the case when:
