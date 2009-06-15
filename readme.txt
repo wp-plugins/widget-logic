@@ -1,6 +1,6 @@
 === Widget Logic ===
 Contributors: alanft
-Donate link: http://www.justgiving.com/
+Donate link: http://www.justgiving.com/widgetlogic_cancerresearchuk
 Tags: widget, admin, conditional tags, filter
 Requires at least: 2.5
 Tested up to: 2.8
@@ -16,7 +16,7 @@ The text field lets you use WP's [Conditional Tags](http://codex.wordpress.org/C
 There is also an option to add a wordpress 'widget_content' filter -- this lets you tweak standard widgets to suit your theme without editing plugins and core code.
 
 = Version History =
-0.46 - Fix to work with new WP2.8 admin ajax. Other fixes too.
+0.46 - Fix to work with new WP2.8 admin ajax. With bonus fixes.
 
 0.44 - Officially works with 2.7 now. Documentation changes and minor bug fixes.
 
@@ -30,6 +30,10 @@ There is also an option to add a wordpress 'widget_content' filter -- this lets 
 
 = Thanks To =
 Kjetil Flekkoy for reporting and helping to diagnose errors in the 0.4 version
+
+= Donations =
+
+If you like and use Widget Logic you could consider a small donation to Cancer Research UK. I have a [JustGiving.com donation link](http://www.justgiving.com/widgetlogic_cancerresearchuk) above with the aim of raising 500 UKP in the next 12 months.
 
 == Installation ==
 
