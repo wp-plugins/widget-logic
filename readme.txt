@@ -15,22 +15,6 @@ The text field lets you use WP's [Conditional Tags](http://codex.wordpress.org/C
 
 There is also an option to add a wordpress 'widget_content' filter -- this lets you tweak standard widgets to suit your theme without editing plugins and core code.
 
-= Version History =
-0.46 - Fix to work with new WP2.8 admin ajax. With bonus fixes.
-
-0.44 - Officially works with 2.7 now. Documentation changes and minor bug fixes.
-
-0.43 - simple bug fix (form data was being lost when 'Cancel'ing widgets)
-
-0.42 - WP 2.5+ only now. WP's widget admin has changed so much and I was getting tied up in knots trying to make it work with them both.
-
-0.4 - Brings WP 2.5 compatibility. I am trying to make it back compatible. If you have trouble using WL with WP 2.1--2.3 let me know the issue.
-
-0.31 - Last WP 2.3 only version
-
-= Thanks To =
-Kjetil Flekkoy for reporting and helping to diagnose errors in the 0.4 version
-
 = Donations =
 
 If you like and use Widget Logic you could consider a small donation to Cancer Research UK. I have a [JustGiving.com donation link](http://www.justgiving.com/widgetlogic_cancerresearchuk) above with the aim of raising 500 UKP in the next 12 months.
@@ -136,3 +120,30 @@ I was motivated to make this filter in order to render all widget titles with th
 	$content=preg_replace("/(<h2[^>]*>)[^<]+/","$1$insert_img",$content,1);
 	return $content;
 }`
+
+== Changelog ==
+
+= 0.46 =
+Fix to work with new WP2.8 admin ajax. With bonus fixes.
+
+= 0.44 =
+Officially works with 2.7 now. Documentation changes and minor bug fixes.
+
+= 0.43 =
+simple bug fix (form data was being lost when 'Cancel'ing widgets)
+
+= 0.42 =
+WP 2.5+ only now. WP's widget admin has changed so much and I was getting tied up in knots trying to make it work with them both.
+
+= 0.4 =
+Brings WP 2.5 compatibility. I am trying to make it back compatible. If you have trouble using WL with WP 2.1--2.3 let me know the issue. Thanks to Kjetil Flekkoy for reporting and helping to diagnose errors in this version
+
+= 0.31 =
+Last WP 2.3 only version
+
+== Upgrade Notice ==
+= 0.46 =
+Required with WP2.8 cos of changes in Widget admin AJAX
+
+= 0.44 =
+Updated for WP2.7 with extra bug fixes
