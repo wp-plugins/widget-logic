@@ -106,11 +106,6 @@ The second parameter ($widget_id) can be used to target specific widgets if need
 
 _Example filters_
 
-This adds the widget_id to the foot of every widget:
-
-`function reveal_widget_id($content='', $widget_id='')
-{	return $content."id=".$widget_id;	}`
-
 I was motivated to make this filter in order to render all widget titles with the excellent [ttftitles plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
 
 `function ttftext_widget_title($content='', $widget_id='')
@@ -120,6 +115,15 @@ I was motivated to make this filter in order to render all widget titles with th
 	$content=preg_replace("/(<h2[^>]*>)[^<]+/","$1$insert_img",$content,1);
 	return $content;
 }`
+
+I often see people asking for ways to give widgets alternating styles. This filter inserts widget_style_a/widget_style_b into the class="widget ..." text usually found in a widget's main definition:
+
+`function make_alternating_widget_styles($content='')
+{	global $wl_make_alt_ws;
+	$wl_make_alt_ws=($wl_make_alt_ws=="style_a")?"style_b":"style_a";
+	return preg_replace('/(class="widget )/', "$1 widget_${wl_make_alt_ws} ", $content);
+}`
+
 
 == Changelog ==
 
