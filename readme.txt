@@ -105,6 +105,7 @@ The second parameter ($widget_id) can be used to target specific widgets if need
 _Example filters_
 
 I was motivated to make this filter in order to render all widget titles with the excellent [ttftitles plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
+
 `add_filter('widget_content', 'ttftext_widget_title');
 function ttftext_widget_title($content='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches);
@@ -115,6 +116,7 @@ function ttftext_widget_title($content='')
 }`
 
 People often ask for a way to give widgets alternating styles. This filter inserts widget_style_a/widget_style_b into the class="widget ..." text usually found in a widget's main definition:
+
 `add_filter('widget_content', 'make_alternating_widget_styles');
 function make_alternating_widget_styles($content='')
 {	global $wl_make_alt_ws;
