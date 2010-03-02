@@ -4,12 +4,19 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.46
+Version: 0.47
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
 
 add_filter( 'widget_update_callback', 'widget_logic_widget_update_callback', 10, 3); 
+add_filter( "plugin_action_links", "wl_charity", 10, 2);
+
+function wl_charity($links, $file) {
+	if ($file == plugin_basename(__FILE__))
+		array_push($links, '<a href="http://www.justgiving.com/widgetlogic_cancerresearchuk/">Charity Donation</a>');
+	return $links;
+}
 
 // new in 2.8 - ajaxy update of a single widget
 function widget_logic_widget_update_callback($instance, $new_instance, $this_widget)
@@ -36,7 +43,7 @@ function widget_logic_expand_control()
 				$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
 		
 		// clean up empty options (in PHP5 use array_intersect_key)
-		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']),(array)'widget_logic-options-filter');
+		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']),array('widget_logic-options-filter', 'widget_logic-options-wp_reset_query'));
 		foreach (array_keys($wl_options) as $key)
 			if (!in_array($key, $regd_plus_new))
 				unset($wl_options[$key]);
