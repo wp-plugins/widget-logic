@@ -55,7 +55,7 @@ Again, take care with your conditional tags. There is both an `in_category` and 
 `(this page IS category X) OR (this is a single post AND this post is IN category X)`
 which in proper PHP is:
 
-`is_category(X) || (is_single() && in_category(X)`
+`is_category(X) || (is_single() && in_category(X))`
 
 See also: 'Writing Logic Code' in the [Other Notes](../other_notes/) section.
 
