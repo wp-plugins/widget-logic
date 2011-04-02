@@ -3,8 +3,8 @@ Contributors: alanft
 Donate link: http://www.justgiving.com/widgetlogic_cancerresearchuk
 Tags: widget, admin, conditional tags, filter, context
 Requires at least: 2.5
-Tested up to: 2.9.2
-Stable tag: 0.47
+Tested up to: 3.1
+Stable tag: 0.48
 
 Widget Logic lets you control on which pages widgets appear. It uses any of WP's conditional tags. It also adds a 'widget_content' filter.
 
@@ -55,7 +55,7 @@ Again, take care with your conditional tags. There is both an `in_category` and 
 `(this page IS category X) OR (this is a single post AND this post is IN category X)`
 which in proper PHP is:
 
-`is_category(X) || (is_single() && in_category(X)`
+`is_category(X) || (is_single() && in_category(X))`
 
 See also: 'Writing Logic Code' in the [Other Notes](../other_notes/) section.
 
@@ -105,6 +105,7 @@ The second parameter ($widget_id) can be used to target specific widgets if need
 _Example filters_
 
 I was motivated to make this filter in order to render all widget titles with the excellent [ttftitles plugin](http://templature.com/2007/10/18/ttftitles-wordpress-plugin/) like this:
+
 `add_filter('widget_content', 'ttftext_widget_title');
 function ttftext_widget_title($content='')
 {	preg_match("/<h2[^>]*>([^<]+)/",$content, $matches);
@@ -115,6 +116,7 @@ function ttftext_widget_title($content='')
 }`
 
 People often ask for a way to give widgets alternating styles. This filter inserts widget_style_a/widget_style_b into the class="widget ..." text usually found in a widget's main definition:
+
 `add_filter('widget_content', 'make_alternating_widget_styles');
 function make_alternating_widget_styles($content='')
 {	global $wl_make_alt_ws;
@@ -124,6 +126,9 @@ function make_alternating_widget_styles($content='')
 
 
 == Changelog ==
+
+= 0.48 =
+Kill some poor coding practices that throws debug notices - thanks to John James Jacoby.
 
 = 0.47 =
 FINALLY tracked down the elusive 'wp_reset_query' option resetting bug.
