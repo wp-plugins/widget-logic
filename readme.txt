@@ -4,7 +4,7 @@ Donate link: http://www.justgiving.com/widgetlogic_cancerresearchuk
 Tags: widget, admin, conditional tags, filter, context
 Requires at least: 2.8
 Tested up to: 3.3
-Stable tag: 0.50
+Stable tag: 0.51
 
 Widget Logic lets you control on which pages widgets appear using WP's conditional tags. It also adds a 'widget_content' filter.
 
@@ -136,6 +136,9 @@ function make_alternating_widget_styles($content='')
 
 
 == Changelog ==
+
+= 0.51 =
+One important bug fix (fairly major and fairly stupid of me too)
 
 = 0.50 =
 For the first time since this started on WP 2.3, I've rewritten how the core widget logic function works, so there may be 'bumps ahead'.

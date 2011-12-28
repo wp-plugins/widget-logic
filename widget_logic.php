@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.50
+Version: 0.51
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -160,7 +160,8 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 
 	// loop through every widget in every sidebar (barring 'wp_inactive_widgets') checking WL for each one
 	foreach($sidebars_widgets as $widget_area => $widget_list)
-	{	if ($widget_area=='wp_inactive_widgets') next;
+	{	if ($widget_area=='wp_inactive_widgets' || empty($widget_list)) continue;
+
 		foreach($widget_list as $pos => $widget_id)
 		{
 			$wl_value=(!empty($wl_options[$widget_id]))?	stripslashes($wl_options[$widget_id]) : "true";
