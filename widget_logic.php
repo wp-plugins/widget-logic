@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.51
+Version: 0.52
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -12,10 +12,11 @@ global $wl_options;
 if((!$wl_options = get_option('widget_logic')) || !is_array($wl_options) ) $wl_options = array();
 
 if (is_admin())
-{	add_action( 'sidebar_admin_setup', 'widget_logic_expand_control');								// save widget changes and add controls to each widget on the widget admin page
-	add_action( 'sidebar_admin_page', 'widget_logic_options_filter');								// add extra Widget Logic specific options on the widget admin page
-	add_filter( 'widget_update_callback', 'widget_logic_widget_update_callback', 10, 3); 			// save individual widget changes submitted by ajax method
-	add_filter( 'plugin_action_links', 'wl_charity', 10, 2);										// add my justgiving page
+{
+	add_filter( 'widget_update_callback', 'widget_logic_ajax_update_callback', 10, 3); 				// widget changes submitted by ajax method
+	add_action( 'sidebar_admin_setup', 'widget_logic_expand_control');								// before any HTML output save widget changes and add controls to each widget on the widget admin page
+	add_action( 'sidebar_admin_page', 'widget_logic_options_control');								// add Widget Logic specific options on the widget admin page
+	add_filter( 'plugin_action_links', 'wl_charity', 10, 2);										// add my justgiving page link to the plugin admin page
 }
 else
 {
@@ -25,14 +26,75 @@ else
 		add_filter( 'dynamic_sidebar_params', 'widget_logic_widget_display_callback', 10); 			// redirect the widget callback so the output can be buffered and filtered
 }
 
+// wp-admin/widgets.php explicitly checks current_user_can('edit_theme_options')
+// which is enough security, I believe. If you think otherwise please contact me
 
+
+// CALLED VIA 'widget_update_callback' FILTER (ajax update of a widget)
+function widget_logic_ajax_update_callback($instance, $new_instance, $this_widget)
+{	global $wl_options;
+	$widget_id=$this_widget->id;
+	if ( isset($_POST[$widget_id.'-widget_logic']))
+	{	$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
+		update_option('widget_logic', $wl_options);
+	}
+	return $instance;
+}
 
 
 // CALLED VIA 'sidebar_admin_setup' ACTION
+// adds in the admin control per widget, but also processes import/export
 function widget_logic_expand_control()
 {	global $wp_registered_widgets, $wp_registered_widget_controls, $wl_options;
 
-	// if we're updating the widgets, read in the widget logic settings (makes this WP2.5+ only?)
+
+	// EXPORT ALL OPTIONS
+	if (isset($_GET['wl-options-export']))
+	{
+		header("Content-Disposition: attachment; filename=widget_logic_options.txt");
+		header('Content-Type: text/plain; charset=utf-8');
+		
+		echo "[START=WIDGET LOGIC OPTIONS]\n";
+		foreach ($wl_options as $id => $text)
+			echo "$id\t".stripslashes($text)."\n";
+		echo "[STOP=WIDGET LOGIC OPTIONS]";
+		exit;
+	}
+
+
+	// IMPORT ALL OPTIONS
+	if ( isset($_POST['wl-options-import']) && $_FILES['wl-options-import-file']['tmp_name'])
+	{	
+		$import=split("\n",file_get_contents($_FILES['wl-options-import-file']['tmp_name'], false));
+		if (array_shift($import)=="[START=WIDGET LOGIC OPTIONS]" && array_pop($import)=="[STOP=WIDGET LOGIC OPTIONS]")
+		{	foreach ($import as $import_option)
+				list($key, $value)=split("\t",$import_option);
+					$wl_options[$key]=$value;
+		}
+		else
+		{	wp_redirect( admin_url('widgets.php?error=Widget%20Logic%20ERROR:%20INVALID%20OPTIONS%20FILE') );
+			exit;
+		}
+		
+		update_option('widget_logic', $wl_options);
+		wp_redirect( admin_url('widgets.php?message=Widget%20Logic%20OK.%20OPTIONS%20IMPORTED') );
+		exit;
+	}
+
+
+	// ADD EXTRA WIDGET LOGIC FIELD TO EACH WIDGET CONTROL
+	// pop the widget id on the params array (as it's not in the main params so not provided to the callback)
+	foreach ( $wp_registered_widgets as $id => $widget )
+	{	// controll-less widgets need an empty function so the callback function is called.
+		if (!$wp_registered_widget_controls[$id])
+			wp_register_widget_control($id,$widget['name'], 'widget_logic_empty_control');
+		$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
+		$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';
+		array_push($wp_registered_widget_controls[$id]['params'],$id);	
+	}
+
+
+	// UPDATE WIDGET LOGIC WIDGET OPTIONS (via accessibility mode?)
 	if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) )
 	{	foreach ( (array) $_POST['widget-id'] as $widget_number => $widget_id )
 			if (isset($_POST[$widget_id.'-widget_logic']))
@@ -44,31 +106,60 @@ function widget_logic_expand_control()
 			if (!in_array($key, $regd_plus_new))
 				unset($wl_options[$key]);
 	}
-	
-	// check the 'widget content' filter option
+
+	// UPDATE OTHER WIDGET LOGIC OPTIONS
 	if ( isset($_POST['widget_logic-options-submit']) )
 	{	$wl_options['widget_logic-options-filter']=$_POST['widget_logic-options-filter'];
 		$wl_options['widget_logic-options-wp_reset_query']=$_POST['widget_logic-options-wp_reset_query'];
 	}
 
-	// before updating widget logic options (which gets EVALd)
-	// we could test current_user_can('edit_theme_options')
-	// although we shouldn't be able to get here without that capability anyway?
+
 	update_option('widget_logic', $wl_options);
 
-	// intercept the widget controls to add in our extra text field
-	// pop the widget id on the params array (as it's not in the main params so not provided to the callback)
-	foreach ( $wp_registered_widgets as $id => $widget )
-	{	// controll-less widgets need an empty function so the callback function is called.
-		if (!$wp_registered_widget_controls[$id])
-			wp_register_widget_control($id,$widget['name'], 'widget_logic_empty_control');
-		$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
-		$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';
-		array_push($wp_registered_widget_controls[$id]['params'],$id);	
-	}
 }
 
 
+
+
+// CALLED VIA 'sidebar_admin_page' ACTION
+// output extra HTML
+function widget_logic_options_control()
+{	global $wp_registered_widget_controls, $wl_options;
+
+
+	if ( isset($_GET['message']) && substr($_GET['message'],0,12)=='Widget Logic')
+		echo '<div id="message" class="updated"><p>'.$_GET['message'].'</p></div>';
+
+	if ( isset($_GET['error']) && substr($_GET['error'],0,12)=='Widget Logic')
+		echo '<div id="message" class="error"><p>'.$_GET['error'].'</p></div>';
+
+
+	?><div class="wrap" style="line-height: 30px;">
+		<form method="POST">
+			<h2>Widget Logic options</h2>
+
+			<label for="widget_logic-options-filter" title="Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.">Use 'widget_content' filter
+			<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php
+				echo $wl_options['widget_logic-options-filter']
+			?> /></label>&nbsp;&nbsp;
+			<label for="widget_logic-options-wp_reset_query" title="Resets a theme's custom queries before your Widget Logic is checked.">Use 'wp_reset_query' fix
+			<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php
+				echo $wl_options['widget_logic-options-wp_reset_query']
+			?> /></label>
+
+			<?php submit_button( __( 'Save' ), 'button', 'widget_logic-options-submit', false ); ?>
+			<!-- input class="submit" type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" value="Save" / -->
+
+		</form>
+		<form method="POST" enctype="multipart/form-data">
+			<a class="submit button" href="?wl-options-export">Export All</a>
+			<input type="file" name="wl-options-import-file" id="wl-options-import-file" />
+		<?php submit_button( __( 'Import All' ), 'button', 'wl-options-import', false ); ?>
+		</form>
+	</div>
+
+	<?php
+}
 
 // added to widget functionality in 'widget_logic_expand_control' (above)
 function widget_logic_empty_control() {}
@@ -96,42 +187,7 @@ function widget_logic_extra_control()
 	if (isset($number)) $id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
 
 	// output our extra widget logic field
-	echo "<p><label for='".$id_disp."-widget_logic'>Widget logic <input type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' value='".$value."' /></label></p>";
-}
-
-
-
-// CALLED VIA 'sidebar_admin_page' ACTION
-function widget_logic_options_filter()
-{	global $wp_registered_widget_controls, $wl_options;
-	?><div class="wrap">
-		<form method="POST">
-			<h2>Widget Logic options</h2>
-			<p style="line-height: 30px;">
-
-			<label for="widget_logic-options-filter" title="Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.">Use 'widget_content' filter
-			<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-filter'] ?> /></label>
-				&nbsp;&nbsp;
-			<label for="widget_logic-options-wp_reset_query" title="Resets a theme's custom queries before your Widget Logic is checked.">Use 'wp_reset_query' fix
-			<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-wp_reset_query'] ?> /></label>
-
-			<span class="submit"><input type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" value="Save" /></span></p>
-		</form>
-	</div>
-	<?php
-}
-
-
-
-// CALLED VIA 'widget_update_callback' ACTION (ajax update of a widget)
-function widget_logic_widget_update_callback($instance, $new_instance, $this_widget)
-{	global $wl_options;
-	$widget_id=$this_widget->id;
-	if ( isset($_POST[$widget_id.'-widget_logic']))
-	{	$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
-		update_option('widget_logic', $wl_options);
-	}
-	return $instance;
+	echo "<p><label for='".$id_disp."-widget_logic'>Widget logic <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
 }
 
 
@@ -154,8 +210,7 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 {	global $wp_reset_query_is_done, $wl_options;
 
 	// reset any database queries done now that we're about to make decisions based on the context given in the WP query for the page
-	// add  && empty( $wp_reset_query_is_done ) to the next line to only exec the reset once per page
-	if ( !empty( $wl_options['widget_logic-options-wp_reset_query'] ) && ( $wl_options['widget_logic-options-wp_reset_query'] == 'checked' ))
+	if ( !empty( $wl_options['widget_logic-options-wp_reset_query'] ) && ( $wl_options['widget_logic-options-wp_reset_query'] == 'checked' ) && empty( $wp_reset_query_is_done ) )
 	{	wp_reset_query(); $wp_reset_query_is_done=true;	}
 
 	// loop through every widget in every sidebar (barring 'wp_inactive_widgets') checking WL for each one
