@@ -56,7 +56,7 @@ function widget_logic_expand_control()
 		
 		echo "[START=WIDGET LOGIC OPTIONS]\n";
 		foreach ($wl_options as $id => $text)
-			echo "$id\t".stripslashes($text)."\n";
+			echo "$id\t".json_encode($text)."\n";
 		echo "[STOP=WIDGET LOGIC OPTIONS]";
 		exit;
 	}
@@ -68,8 +68,9 @@ function widget_logic_expand_control()
 		$import=split("\n",file_get_contents($_FILES['wl-options-import-file']['tmp_name'], false));
 		if (array_shift($import)=="[START=WIDGET LOGIC OPTIONS]" && array_pop($import)=="[STOP=WIDGET LOGIC OPTIONS]")
 		{	foreach ($import as $import_option)
-				list($key, $value)=split("\t",$import_option);
-					$wl_options[$key]=$value;
+			{	list($key, $value)=split("\t",$import_option);
+				$wl_options[$key]=json_decode($value);
+			}
 		}
 		else
 		{	wp_redirect( admin_url('widgets.php?error=Widget%20Logic%20ERROR:%20INVALID%20OPTIONS%20FILE') );
