@@ -9,6 +9,12 @@ Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
 global $wl_options;
+$wl_load_points=array(	'plugins_loaded' =>		'when plugin starts (default)',
+						'after_setup_theme'=>	'after theme loads',
+						'wp_loaded' => 			'when all PHP loaded',
+						'wp_head'=> 			'during page header'
+					);
+
 if((!$wl_options = get_option('widget_logic')) || !is_array($wl_options) ) $wl_options = array();
 
 if (is_admin())
@@ -20,12 +26,22 @@ if (is_admin())
 }
 else
 {
-	add_filter( 'sidebars_widgets', 'widget_logic_filter_sidebars_widgets', 10);					// actually remove the widgets from the front end depending on widget logic provided
-
+	if (	isset($wl_options['widget_logic-options-load_point']) &&
+			($wl_options['widget_logic-options-load_point']!='plugins_loaded') &&
+			array_key_exists($wl_options['widget_logic-options-load_point'],$wl_load_points )
+		)
+		add_action ($wl_options['widget_logic-options-load_point'],'widget_logic_sidebars_widgets_filter_add');
+	else
+		widget_logic_sidebars_widgets_filter_add();
+		
 	if ( isset($wl_options['widget_logic-options-filter']) && $wl_options['widget_logic-options-filter'] == 'checked' )
 		add_filter( 'dynamic_sidebar_params', 'widget_logic_widget_display_callback', 10); 			// redirect the widget callback so the output can be buffered and filtered
 }
 
+function widget_logic_sidebars_widgets_filter_add()
+{
+	add_filter( 'sidebars_widgets', 'widget_logic_filter_sidebars_widgets', 10);					// actually remove the widgets from the front end depending on widget logic provided
+}
 // wp-admin/widgets.php explicitly checks current_user_can('edit_theme_options')
 // which is enough security, I believe. If you think otherwise please contact me
 
@@ -63,22 +79,26 @@ function widget_logic_expand_control()
 
 
 	// IMPORT ALL OPTIONS
-	if ( isset($_POST['wl-options-import']) && $_FILES['wl-options-import-file']['tmp_name'])
-	{	
-		$import=split("\n",file_get_contents($_FILES['wl-options-import-file']['tmp_name'], false));
-		if (array_shift($import)=="[START=WIDGET LOGIC OPTIONS]" && array_pop($import)=="[STOP=WIDGET LOGIC OPTIONS]")
-		{	foreach ($import as $import_option)
-			{	list($key, $value)=split("\t",$import_option);
-				$wl_options[$key]=json_decode($value);
+	if ( isset($_POST['wl-options-import']))
+	{	if ($_FILES['wl-options-import-file']['tmp_name'])
+		{	$import=split("\n",file_get_contents($_FILES['wl-options-import-file']['tmp_name'], false));
+			if (array_shift($import)=="[START=WIDGET LOGIC OPTIONS]" && array_pop($import)=="[STOP=WIDGET LOGIC OPTIONS]")
+			{	foreach ($import as $import_option)
+				{	list($key, $value)=split("\t",$import_option);
+					$wl_options[$key]=json_decode($value);
+				}
+				$wl_options['msg']="OK – options file imported";
 			}
+			else
+			{	$wl_options['msg']="Invalid options file";
+			}
+			
 		}
 		else
-		{	wp_redirect( admin_url('widgets.php?error=Widget%20Logic%20ERROR:%20INVALID%20OPTIONS%20FILE') );
-			exit;
-		}
+			$wl_options['msg']="No options file provided";
 		
 		update_option('widget_logic', $wl_options);
-		wp_redirect( admin_url('widgets.php?message=Widget%20Logic%20OK.%20OPTIONS%20IMPORTED') );
+		wp_redirect( admin_url('widgets.php') );
 		exit;
 	}
 
@@ -102,16 +122,19 @@ function widget_logic_expand_control()
 				$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
 		
 		// clean up empty options (in PHP5 use array_intersect_key)
-		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']),array('widget_logic-options-filter', 'widget_logic-options-wp_reset_query'));
+		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']),
+			array('widget_logic-options-filter', 'widget_logic-options-wp_reset_query', 'widget_logic-options-load_point'));
 		foreach (array_keys($wl_options) as $key)
 			if (!in_array($key, $regd_plus_new))
 				unset($wl_options[$key]);
 	}
 
 	// UPDATE OTHER WIDGET LOGIC OPTIONS
+	// must update this to use http://codex.wordpress.org/Settings_API
 	if ( isset($_POST['widget_logic-options-submit']) )
 	{	$wl_options['widget_logic-options-filter']=$_POST['widget_logic-options-filter'];
 		$wl_options['widget_logic-options-wp_reset_query']=$_POST['widget_logic-options-wp_reset_query'];
+		$wl_options['widget_logic-options-load_point']=$_POST['widget_logic-options-load_point'];
 	}
 
 
@@ -124,39 +147,61 @@ function widget_logic_expand_control()
 
 // CALLED VIA 'sidebar_admin_page' ACTION
 // output extra HTML
+// to update using http://codex.wordpress.org/Settings_API asap
 function widget_logic_options_control()
-{	global $wp_registered_widget_controls, $wl_options;
+{	global $wp_registered_widget_controls, $wl_options, $wl_load_points;
+
+	if ( isset($wl_options['msg']))
+	{	if (substr($wl_options['msg'],0,2)=="OK")
+			echo '<div id="message" class="updated">';
+		else
+			echo '<div id="message" class="error">';
+		echo '<p>Widget Logic – '.$wl_options['msg'].'</p></div>';
+		unset($wl_options['msg']);
+		update_option('widget_logic', $wl_options);
+	}
 
 
-	if ( isset($_GET['message']) && substr($_GET['message'],0,12)=='Widget Logic')
-		echo '<div id="message" class="updated"><p>'.$_GET['message'].'</p></div>';
+	?><div class="wrap">
+		
+		<h2>Widget Logic options</h2>
+		<form method="POST" style="float:left; width:45%">
+			<ul>
+				<li><label for="widget_logic-options-filter" title="Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.">
+					<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-filter'] ?>/>
+					Add 'widget_content' filter
+					</label>
+				</li>
+				<li><label for="widget_logic-options-wp_reset_query" title="Resets a theme's custom queries before your Widget Logic is checked">
+					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-wp_reset_query'] ?> />
+					Use 'wp_reset_query' fix
+					</label>
+				</li>
+				<li><label for="widget_logic-options-load_point" title="Delays widget logic code being evaluated til various points in the WP loading process">Load logic
+					<select id="widget_logic-options-load_point" name="widget_logic-options-load_point" ><?php
+						foreach($wl_load_points as $action => $action_desc)
+						{	echo "<option value='".$action."'";
+							if ($action==$wl_options['widget_logic-options-load_point'])
+								echo " selected ";
+							echo ">".$action_desc."</option>"; // 
+						}
+						?>
+					</select>
+					</label>
+				</li>
+			</ul>
 
-	if ( isset($_GET['error']) && substr($_GET['error'],0,12)=='Widget Logic')
-		echo '<div id="message" class="error"><p>'.$_GET['error'].'</p></div>';
-
-
-	?><div class="wrap" style="line-height: 30px;">
-		<form method="POST">
-			<h2>Widget Logic options</h2>
-
-			<label for="widget_logic-options-filter" title="Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.">Use 'widget_content' filter
-			<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php
-				echo $wl_options['widget_logic-options-filter']
-			?> /></label>&nbsp;&nbsp;
-			<label for="widget_logic-options-wp_reset_query" title="Resets a theme's custom queries before your Widget Logic is checked.">Use 'wp_reset_query' fix
-			<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php
-				echo $wl_options['widget_logic-options-wp_reset_query']
-			?> /></label>
-
-			<?php submit_button( __( 'Save' ), 'button', 'widget_logic-options-submit', false ); ?>
-			<!-- input class="submit" type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" value="Save" / -->
+			<?php submit_button( __( 'Save WL options' ), 'button-primary', 'widget_logic-options-submit', false ); ?>
 
 		</form>
-		<form method="POST" enctype="multipart/form-data">
-			<a class="submit button" href="?wl-options-export">Export All</a>
-			<input type="file" name="wl-options-import-file" id="wl-options-import-file" />
-		<?php submit_button( __( 'Import All' ), 'button', 'wl-options-import', false ); ?>
+		<form method="POST" enctype="multipart/form-data" style="float:left; width:45%">
+			<a class="submit button" href="?wl-options-export" title="Save all WL options to a plain text config file">Export options</a><p>
+			<?php submit_button( __( 'Import options' ), 'button', 'wl-options-import', false,
+					array(	'title'=>'Load all WL options from a plain text config file'
+					) ); ?>
+			<input type="file" name="wl-options-import-file" id="wl-options-import-file" title="Select file for importing" /></p>
 		</form>
+
 	</div>
 
 	<?php
