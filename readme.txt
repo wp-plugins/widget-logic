@@ -37,7 +37,8 @@ Aside from logic against your widgets, there are three options added to the foot
 	* after the theme loads (after_setup_theme trigger)
 	* when all PHP loaded (wp_loaded trigger)
 	* during page header (wp_head trigger)
-You may need to delay the load if your logic depends on functions defined, eg in the theme functions.php file. Conversely you may want the load early so that the widget count is calculated correctly, eg to show an alternative layour or content when a sidebar has no widgets.
+
+	You may need to delay the load if your logic depends on functions defined, eg in the theme functions.php file. Conversely you may want the load early so that the widget count is calculated correctly, eg to show an alternative layour or content when a sidebar has no widgets.
 
 == Frequently Asked Questions ==
 
