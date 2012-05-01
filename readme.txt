@@ -175,7 +175,7 @@ function make_alternating_widget_styles($content='')
 == Changelog ==
 
 = 0.52 =
-Two new features: optional delayed loading of logic, and the ability to save out and reload all your site's widget logic into a config file
+Two new features: optional delayed loading of logic (see Configuration under [Installation](../installation/)), and the ability to save out and reload all your site's widget logic into a config file
 
 = 0.51 =
 One important bug fix (fairly major and fairly stupid of me too)
