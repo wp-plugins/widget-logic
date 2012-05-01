@@ -189,7 +189,7 @@ introduced in WP2.8 by the look of it). The upshot is that is_active_sidebar sho
 Widget callbacks only get intercepted if the 'widget_content' filter is activated, and much more briefly. (A widget's 'callback' is rewired within the 'dynamic_sidebar' function just before the widget is called, by the 'dynamic_sidebar_param' filter, and is restored when the callback function is invoked.) 
 
 = 0.48 =
-Kill some poor coding practices that throws debug notices - thanks to John James Jacoby. This is currently the 'last stable release'
+Kill some poor coding practices that throws debug notices - thanks to John James Jacoby.
 
 = 0.47 =
 FINALLY tracked down the elusive 'wp_reset_query' option resetting bug.
