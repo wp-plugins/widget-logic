@@ -4,7 +4,7 @@ Plugin Name: Widget Logic
 Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
 Description: Control widgets with WP's conditional tags is_home etc
 Author: Alan Trewartha
-Version: 0.52
+Version: 0.53
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
@@ -51,7 +51,7 @@ function widget_logic_ajax_update_callback($instance, $new_instance, $this_widge
 {	global $wl_options;
 	$widget_id=$this_widget->id;
 	if ( isset($_POST[$widget_id.'-widget_logic']))
-	{	$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
+	{	$wl_options[$widget_id]=trim($_POST[$widget_id.'-widget_logic']);
 		update_option('widget_logic', $wl_options);
 	}
 	return $instance;
@@ -119,7 +119,7 @@ function widget_logic_expand_control()
 	if ( 'post' == strtolower($_SERVER['REQUEST_METHOD']) )
 	{	foreach ( (array) $_POST['widget-id'] as $widget_number => $widget_id )
 			if (isset($_POST[$widget_id.'-widget_logic']))
-				$wl_options[$widget_id]=$_POST[$widget_id.'-widget_logic'];
+				$wl_options[$widget_id]=trim($_POST[$widget_id.'-widget_logic']);
 		
 		// clean up empty options (in PHP5 use array_intersect_key)
 		$regd_plus_new=array_merge(array_keys($wp_registered_widgets),array_values((array) $_POST['widget-id']),
@@ -190,15 +190,11 @@ function widget_logic_options_control()
 					</label>
 				</li>
 			</ul>
-
-			<?php submit_button( __( 'Save WL options' ), 'button-primary', 'widget_logic-options-submit', false ); ?>
-
+			<input type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" class="button-primary" value="Save WL options"  />
 		</form>
 		<form method="POST" enctype="multipart/form-data" style="float:left; width:45%">
 			<a class="submit button" href="?wl-options-export" title="Save all WL options to a plain text config file">Export options</a><p>
-			<?php submit_button( __( 'Import options' ), 'button', 'wl-options-import', false,
-					array(	'title'=>'Load all WL options from a plain text config file'
-					) ); ?>
+			<input type="submit" name="wl-options-import" id="wl-options-import" class="button" value="Import options" title="Load all WL options from a plain text config file"  />
 			<input type="file" name="wl-options-import-file" id="wl-options-import-file" title="Select file for importing" /></p>
 		</form>
 
@@ -265,7 +261,7 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 
 		foreach($widget_list as $pos => $widget_id)
 		{
-			$wl_value=(!empty($wl_options[$widget_id]))?	stripslashes($wl_options[$widget_id]) : "true";
+			$wl_value=(!empty(trim($wl_options[$widget_id])))?	stripslashes($wl_options[$widget_id]) : "true";
 			$wl_value =(stristr($wl_value,"return"))?		$wl_value: "return (" . $wl_value . ");";
 			if (!eval($wl_value))
 				unset($sidebars_widgets[$widget_area][$pos]);
