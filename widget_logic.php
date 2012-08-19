@@ -264,6 +264,13 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 			$wl_value=trim($wl_options[$widget_id]);
 			if (empty($wl_value))  continue;
 
+			$wl_value=apply_filters( "widget_logic_eval_override", $wl_value );
+			if ($wl_value===false)
+			{	unset($sidebars_widgets[$widget_area][$pos]);
+				continue;
+			}
+			if ($wl_value===true) continue;
+
 			if (stristr($wl_value,"return")===false)
 				$wl_value="return (" . $wl_value . ");";
 
