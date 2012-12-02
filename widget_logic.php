@@ -168,12 +168,12 @@ function widget_logic_options_control()
 		<form method="POST" style="float:left; width:45%">
 			<ul>
 				<li><label for="widget_logic-options-filter" title="Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.">
-					<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-filter'] ?>/>
+					<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-filter'])) echo "checked" ?>/>
 					Add 'widget_content' filter
 					</label>
 				</li>
 				<li><label for="widget_logic-options-wp_reset_query" title="Resets a theme's custom queries before your Widget Logic is checked">
-					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php echo $wl_options['widget_logic-options-wp_reset_query'] ?> />
+					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-wp_reset_query'])) echo "checked" ?> />
 					Use 'wp_reset_query' fix
 					</label>
 				</li>
@@ -181,7 +181,7 @@ function widget_logic_options_control()
 					<select id="widget_logic-options-load_point" name="widget_logic-options-load_point" ><?php
 						foreach($wl_load_points as $action => $action_desc)
 						{	echo "<option value='".$action."'";
-							if ($action==$wl_options['widget_logic-options-load_point'])
+							if (isset($wl_options['widget_logic-options-load_point']) && $action==$wl_options['widget_logic-options-load_point'])
 								echo " selected ";
 							echo ">".$action_desc."</option>"; // 
 						}
