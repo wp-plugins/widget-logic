@@ -8,11 +8,14 @@ Version: 0.54
 Author URI: http://freakytrigger.co.uk/author/alan/
 */ 
 
+$plugin_dir = basename(dirname(__FILE__));
+load_plugin_textdomain( 'widget-logic', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
 global $wl_options;
-$wl_load_points=array(	'plugins_loaded' =>		'when plugin starts (default)',
-						'after_setup_theme'=>	'after theme loads',
-						'wp_loaded' => 			'when all PHP loaded',
-						'wp_head'=> 			'during page header'
+$wl_load_points=array(	'plugins_loaded'    =>	__( 'when plugin starts (default)', 'widget-logic' ),
+                        'after_setup_theme' =>	__( 'after theme loads', 'widget-logic' ),
+                        'wp_loaded'         =>	__( 'when all PHP loaded', 'widget-logic' ),
+                        'wp_head'           =>	__( 'during page header', 'widget-logic' )
 					);
 
 if((!$wl_options = get_option('widget_logic')) || !is_array($wl_options) ) $wl_options = array();
@@ -164,20 +167,20 @@ function widget_logic_options_control()
 
 	?><div class="wrap">
 		
-		<h2>Widget Logic options</h2>
+		<h2><?php _e('Widget Logic options', 'widget-logic'); ?></h2>
 		<form method="POST" style="float:left; width:45%">
 			<ul>
-				<li><label for="widget_logic-options-filter" title="Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.">
+				<li><label for="widget_logic-options-filter" title="<?php _e('Adds a new WP filter you can use in your own code. Not needed for main Widget Logic functionality.', 'widget-logic'); ?>">
 					<input id="widget_logic-options-filter" name="widget_logic-options-filter" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-filter'])) echo "checked" ?>/>
-					Add 'widget_content' filter
+					<?php _e('Add \'widget_content\' filter', 'widget-logic'); ?>
 					</label>
 				</li>
-				<li><label for="widget_logic-options-wp_reset_query" title="Resets a theme's custom queries before your Widget Logic is checked">
+				<li><label for="widget_logic-options-wp_reset_query" title="<?php _e('Resets a theme\'s custom queries before your Widget Logic is checked', 'widget-logic'); ?>">
 					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-wp_reset_query'])) echo "checked" ?> />
-					Use 'wp_reset_query' fix
+					<?php _e('Use \'wp_reset_query\' fix', 'widget-logic'); ?>
 					</label>
 				</li>
-				<li><label for="widget_logic-options-load_point" title="Delays widget logic code being evaluated til various points in the WP loading process">Load logic
+				<li><label for="widget_logic-options-load_point" title="<?php _e('Delays widget logic code being evaluated til various points in the WP loading process', 'widget-logic'); ?>"><?php _e('Load logic', 'widget-logic'); ?>
 					<select id="widget_logic-options-load_point" name="widget_logic-options-load_point" ><?php
 						foreach($wl_load_points as $action => $action_desc)
 						{	echo "<option value='".$action."'";
@@ -190,12 +193,13 @@ function widget_logic_options_control()
 					</label>
 				</li>
 			</ul>
-			<input type="submit" name="widget_logic-options-submit" id="widget_logic-options-submit" class="button-primary" value="Save WL options"  />
+			<?php submit_button( __( 'Save WL options', 'widget-logic' ), 'button-primary', 'widget_logic-options-submit', false ); ?>
+
 		</form>
 		<form method="POST" enctype="multipart/form-data" style="float:left; width:45%">
-			<a class="submit button" href="?wl-options-export" title="Save all WL options to a plain text config file">Export options</a><p>
-			<input type="submit" name="wl-options-import" id="wl-options-import" class="button" value="Import options" title="Load all WL options from a plain text config file"  />
-			<input type="file" name="wl-options-import-file" id="wl-options-import-file" title="Select file for importing" /></p>
+			<a class="submit button" href="?wl-options-export" title="<?php _e('Save all WL options to a plain text config file', 'widget-logic'); ?>"><?php _e('Export options', 'widget-logic'); ?></a><p>
+			<?php submit_button( __( 'Import options', 'widget-logic' ), 'button', 'wl-options-import', false, array('title'=> __( 'Load all WL options from a plain text config file', 'widget-logic' ) ) ); ?>
+			<input type="file" name="wl-options-import-file" id="wl-options-import-file" title="<?php _e('Select file for importing', 'widget-logic'); ?>" /></p>
 		</form>
 
 	</div>
@@ -224,12 +228,12 @@ function widget_logic_extra_control()
 
 	// dealing with multiple widgets - get the number. if -1 this is the 'template' for the admin interface
 	$number=$params[0]['number'];
-	if ($number==-1) {$number="%i%"; $value="";}
+	if ($number==-1) {$number="XXX"; $value="";}
 	$id_disp=$id;
 	if (isset($number)) $id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
 
 	// output our extra widget logic field
-	echo "<p><label for='".$id_disp."-widget_logic'>Widget logic <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
+	echo "<p><label for='".$id_disp."-widget_logic'>Widget logic: <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
 }
 
 
