@@ -1,11 +1,14 @@
 <?php
 /*
-Plugin Name: Widget Logic
-Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
-Description: Control widgets with WP's conditional tags is_home etc
-Author: Alan Trewartha
-Version: 0.54
-Author URI: http://freakytrigger.co.uk/author/alan/
+Plugin Name:    Widget Logic
+Plugin URI:     http://wordpress.org/extend/plugins/widget-logic/
+Description:    Control widgets with WP's conditional tags is_home etc
+Version:        0.54
+Author:         Alan Trewartha
+Author URI:     http://freakytrigger.co.uk/author/alan/
+ 
+Text Domain:   widget-logic
+Domain Path:   /languages/
 */ 
 
 $plugin_dir = basename(dirname(__FILE__));

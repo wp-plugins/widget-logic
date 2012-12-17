@@ -3,7 +3,7 @@ Contributors: alanft
 Donate link: http://www.justgiving.com/widgetlogic_cancerresearchuk
 Tags: widget, admin, conditional tags, filter, context
 Requires at least: 2.8
-Tested up to: 3.4.1
+Tested up to: 3.5
 Stable tag: 0.52
 
 Widget Logic lets you control on which pages widgets appear using WP's conditional tags. It also adds a 'widget_content' filter.
@@ -18,6 +18,10 @@ There is also an option to add a wordpress 'widget_content' filter -- this lets 
 = Donations =
 
 If you like and use Widget Logic you could consider a small donation to Cancer Research UK. I have a [JustGiving.com donation link](http://www.justgiving.com/widgetlogic_cancerresearchuk). As of December 2011 we have raised 440 UKP. I'm going to aim to have upped that to 750 UKP by the end of 2012.
+
+= Translate =
+
+Social Translation: [https://translate.foe-services.de](https://translate.foe-services.de)
 
 == Installation ==
 
@@ -176,6 +180,8 @@ function make_alternating_widget_styles($content='')
 
 = 0.54 =
 I removed a WP 3.1+ function call, hopefully making it 2.8 compatible again. Also added in a little bit of 'trim' to stop "syntax error, unexpected ')'" errors, which could occur if your WL was just a single space. Thanks to https://twitter.com/chrisjean for pointing this out.
+
+Thanks to Foe Services Labs http://wordpress.org/support/profile/cfoellmann for the work on translation support and the German translation files.
 
 = 0.53 =
 Accidentally released code with a terrible bug in it :-(

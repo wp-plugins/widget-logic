@@ -12,6 +12,10 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
+#: widget_logic.php:5
+msgid "Control widgets with WP's conditional tags is_home etc"
+msgstr ""
+
 #: widget_logic.php:15
 msgid "when plugin starts (default)"
 msgstr ""
