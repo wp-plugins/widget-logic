@@ -5,6 +5,7 @@ Tags: widget, admin, conditional tags, filter, context
 Requires at least: 2.8
 Tested up to: 3.5
 Stable tag: 0.52
+License: GPLv2 or later
 
 Widget Logic lets you control on which pages widgets appear using WP's conditional tags. It also adds a 'widget_content' filter.
 
