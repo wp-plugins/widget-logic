@@ -93,15 +93,15 @@ function widget_logic_expand_control()
 				{	list($key, $value)=split("\t",$import_option);
 					$wl_options[$key]=json_decode($value);
 				}
-				$wl_options['msg']="OK – options file imported";
+				$wl_options['msg']= __('Success! Options file imported','widget-logic');
 			}
 			else
-			{	$wl_options['msg']="Invalid options file";
+			{	$wl_options['msg']= __('Invalid options file','widget-logic');
 			}
 			
 		}
 		else
-			$wl_options['msg']="No options file provided";
+			$wl_options['msg']= __('No options file provided','widget-logic');
 		
 		update_option('widget_logic', $wl_options);
 		wp_redirect( admin_url('widgets.php') );
