@@ -268,7 +268,7 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 
 		foreach($widget_list as $pos => $widget_id)
 		{	if (empty($wl_options[$widget_id]))  continue;
-			$wl_value=trim($wl_options[$widget_id]);
+			$wl_value=stripslashes(trim($wl_options[$widget_id]));
 			if (empty($wl_value))  continue;
 
 			$wl_value=apply_filters( "widget_logic_eval_override", $wl_value );
