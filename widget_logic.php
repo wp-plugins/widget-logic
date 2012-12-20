@@ -1,11 +1,14 @@
 <?php
 /*
-Plugin Name: Widget Logic
-Plugin URI: http://freakytrigger.co.uk/wordpress-setup/
-Description: Control widgets with WP's conditional tags is_home etc
-Author: Alan Trewartha
-Version: 0.54
-Author URI: http://freakytrigger.co.uk/author/alan/
+Plugin Name:    Widget Logic
+Plugin URI:     http://wordpress.org/extend/plugins/widget-logic/
+Description:    Control widgets with WP's conditional tags is_home etc
+Version:        0.54
+Author:         Alan Trewartha
+Author URI:     http://freakytrigger.co.uk/author/alan/
+ 
+Text Domain:   widget-logic
+Domain Path:   /languages/
 */ 
 
 $plugin_dir = basename(dirname(__FILE__));
@@ -90,15 +93,15 @@ function widget_logic_expand_control()
 				{	list($key, $value)=split("\t",$import_option);
 					$wl_options[$key]=json_decode($value);
 				}
-				$wl_options['msg']="OK – options file imported";
+				$wl_options['msg']= __('Success! Options file imported','widget-logic');
 			}
 			else
-			{	$wl_options['msg']="Invalid options file";
+			{	$wl_options['msg']= __('Invalid options file','widget-logic');
 			}
 			
 		}
 		else
-			$wl_options['msg']="No options file provided";
+			$wl_options['msg']= __('No options file provided','widget-logic');
 		
 		update_option('widget_logic', $wl_options);
 		wp_redirect( admin_url('widgets.php') );
