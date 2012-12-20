@@ -12,7 +12,7 @@ Widget Logic lets you control on which pages widgets appear using WP's condition
 == Description ==
 This plugin gives every widget an extra control field called "Widget logic" that lets you control the pages that the widget will appear on. The text field lets you use WP's [Conditional Tags](http://codex.wordpress.org/Conditional_Tags), or any general PHP code.
 
-PLEASE NOTE The widget logic you introduce is EVAL'd directly. Anyone who has access to edit widget appearance will have the right to add any code, including malicious and possibly destructive functions. If you are worried about the security implications, please let me know how you think I could guard against this without compromising the general power and flexibility of Widget Logic too much.
+PLEASE NOTE The widget logic you introduce is EVAL'd directly. Anyone who has access to edit widget appearance will have the right to add any code, including malicious and possibly destructive functions. There is an optional filter 'widget_logic_eval_override' which you can use to bypass the EVAL with your own code if needed. (See [Other Notes](../other_notes/)).
 
 There is also an option to add a wordpress 'widget_content' filter -- this lets you tweak any widget's HTML to suit your theme without editing plugins and core code.
 
@@ -135,6 +135,9 @@ There are lots of great code examples on the WP forums, and on WP sites across t
 
 Note the extra ';' on the end where there is an explicit 'return'.
 
+== The 'widget_logic_eval_override' filter ==
+Before the Widget Logic code is evaluated for each widget, the text of the Widget Logic code is passed through this filter. If the filter returns a BOOLEAN result, this is used instead to determine if the widget is visible. Return TRUE for visible.
+
 == The 'widget_content' filter ==
 
 When this option is active (tick the option tickbox at the foot of the widget admin page) you can modify the text displayed by ANY widget from your own theme's functions.php file. Hook into the filter with:
@@ -180,9 +183,13 @@ function make_alternating_widget_styles($content='')
 == Changelog ==
 
 = 0.54 =
-I removed a WP 3.1+ function call, hopefully making it 2.8 compatible again. Also added in a little bit of 'trim' to stop "syntax error, unexpected ')'" errors, which could occur if your WL was just a single space. Thanks to https://twitter.com/chrisjean for pointing this out.
+Removed a WP 3.1+ function call, hopefully making it 2.8 compatible again.
 
-Thanks to Foe Services Labs http://wordpress.org/support/profile/cfoellmann for the work on translation support and the German translation files.
+A little 'trim' of WL code to stop "syntax error, unexpected ')'" errors, which could occur if your WL was just a single space. Thanks to https://twitter.com/chrisjean for pointing this out.
+
+Translation support! Thanks to Foe Services Labs http://wordpress.org/support/profile/cfoellmann for the work on this and the German translation files.
+
+Added a 'widget_logic_eval_override' filter. This allows advanced users to bypass EVAL with a function of their own.
 
 = 0.53 =
 Accidentally released code with a terrible bug in it :-(
