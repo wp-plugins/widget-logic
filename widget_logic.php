@@ -3,7 +3,7 @@
 Plugin Name:    Widget Logic
 Plugin URI:     http://wordpress.org/extend/plugins/widget-logic/
 Description:    Control widgets with WP's conditional tags is_home etc
-Version:        0.54
+Version:        0.55
 Author:         Alan Trewartha
 Author URI:     http://freakytrigger.co.uk/author/alan/
  
@@ -268,7 +268,7 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 
 		foreach($widget_list as $pos => $widget_id)
 		{	if (empty($wl_options[$widget_id]))  continue;
-			$wl_value=trim($wl_options[$widget_id]);
+			$wl_value=stripslashes(trim($wl_options[$widget_id]));
 			if (empty($wl_value))  continue;
 
 			$wl_value=apply_filters( "widget_logic_eval_override", $wl_value );
