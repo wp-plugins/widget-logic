@@ -231,7 +231,7 @@ function widget_logic_extra_control()
 
 	// dealing with multiple widgets - get the number. if -1 this is the 'template' for the admin interface
 	$number=$params[0]['number'];
-	if ($number==-1) {$number="XXX"; $value="";}
+	if ($number==-1) {$number="__i__"; $value="";}
 	$id_disp=$id;
 	if (isset($number)) $id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
 
