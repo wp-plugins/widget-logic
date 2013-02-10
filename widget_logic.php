@@ -230,10 +230,12 @@ function widget_logic_extra_control()
 	$value = !empty( $wl_options[$id ] ) ? htmlspecialchars( stripslashes( $wl_options[$id ] ),ENT_QUOTES ) : '';
 
 	// dealing with multiple widgets - get the number. if -1 this is the 'template' for the admin interface
-	if (!empty($params)) $number=$params[0]['number'];
-	if ($number==-1) {$number="__i__"; $value="";}
 	$id_disp=$id;
-	if (isset($number)) $id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
+	if (!empty($params) && isset($params[0]['number']))
+	{	$number=$params[0]['number'];
+		if ($number==-1) {$number="__i__"; $value="";}
+		$id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
+	}
 
 	// output our extra widget logic field
 	echo "<p><label for='".$id_disp."-widget_logic'>". __('Widget logic:','widget-logic'). " <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
