@@ -12,7 +12,7 @@ Widget Logic lets you control on which pages widgets appear using WP's condition
 == Description ==
 This plugin gives every widget an extra control field called "Widget logic" that lets you control the pages that the widget will appear on. The text field lets you use WP's [Conditional Tags](http://codex.wordpress.org/Conditional_Tags), or any general PHP code.
 
-PLEASE NOTE The widget logic you introduce is EVAL'd directly. Anyone who has access to edit widget appearance will have the right to add any code, including malicious and possibly destructive functions. There is an optional filter 'widget_logic_eval_override' which you can use to bypass the EVAL with your own code if needed. (See [Other Notes](./other_notes/)).
+PLEASE NOTE The widget logic you introduce is EVAL'd directly. Anyone who has access to edit widget appearance will have the right to add any code, including malicious and possibly destructive functions. There is an optional filter 'widget_logic_eval_override' which you can use to bypass the EVAL with your own code if needed. (See [Other Notes](other_notes/)).
 
 There is also an option to add a wordpress 'widget_content' filter -- this lets you tweak any widget's HTML to suit your theme without editing plugins and core code.
 
