@@ -25,7 +25,7 @@ msgid "when all PHP loaded"
 msgstr ""
 
 #: widget_logic.php:21
-msgid "when query variables set"
+msgid "after query variables set"
 msgstr ""
 
 #: widget_logic.php:22
