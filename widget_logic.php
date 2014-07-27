@@ -186,7 +186,7 @@ function widget_logic_options_control()
 					</label>
 				</li>
 				<li><label for="widget_logic-options-dont-cache-logic" title="<?php _e('Re-evaluates widget logic every time the sidebars_widgets filter is called', 'widget-logic'); ?>">
-					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-wp_reset_query'])) echo "checked" ?> />
+					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-dont-cache-logic'])) echo "checked" ?> />
 					<?php _e('Don\'t cache widget logic results', 'widget-logic'); ?>
 					</label>
 				</li>
