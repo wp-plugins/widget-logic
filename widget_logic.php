@@ -15,10 +15,10 @@ $plugin_dir = basename(dirname(__FILE__));
 load_plugin_textdomain( 'widget-logic', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 global $wl_options;
-$wl_load_points=array(	'plugins_loaded'    =>	__( 'when plugin starts (default)', 'widget-logic' ),
+$wl_load_points=array(	'plugins_loaded'    =>	__( 'when plugin starts', 'widget-logic' ),
                         'after_setup_theme' =>	__( 'after theme loads', 'widget-logic' ),
                         'wp_loaded'         =>	__( 'when all PHP loaded', 'widget-logic' ),
-                        'parse_query'		=>	__( 'after query variables set', 'widget-logic'),
+                        'parse_query'		=>	__( 'when query variables set (default)', 'widget-logic'),
                         'wp_head'           =>	__( 'during page header', 'widget-logic' )
 					);
 

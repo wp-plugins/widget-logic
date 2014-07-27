@@ -40,27 +40,41 @@ Aside from logic against your widgets, there are three options added to the foot
 
 * Use 'wp_reset_query' fix -- Many features of WP, as well as the many themes and plugins out there, can mess with the conditional tags, such that is_home is NOT true on the home page. This can often be fixed with a quick wp_reset_query() statement just before the widgets are called, and this option puts that in for you rather than having to resort to code editing
 
+*  Don't cache widget logic results -- From v .58 the widget logic code should only execute once, but that might cause unexpected results with some themes, so this option is here to turn that behaviour off.
+
 * Load logic -- This option allows you to set the point in the page load at which your widget logic starts to be checked. Pre v.50 it was when the 'wp_head' trigger happened, ie during the creation of the HTML's HEAD block. Many themes didn't call wp_head, which was a problem. From v.50 it happens, by default, as early as possible, which is as soon as the plugin loads. You can now specify these 'late load' points (in chronological order):
 	* after the theme loads (after_setup_theme trigger)
 	* when all PHP loaded (wp_loaded trigger)
+	* after query variables set (parse_query)
 	* during page header (wp_head trigger)
 
 	You may need to delay the load if your logic depends on functions defined, eg in the theme functions.php file. Conversely you may want the load early so that the widget count is calculated correctly, eg to show an alternative layour or content when a sidebar has no widgets.
 
 == Frequently Asked Questions ==
 
-= Why isn't it working? =
+= I upgraded to Version .58 and my site's widgets now behave differently =
 
-Try switching to the WP default theme - if the problem goes away, there is something specific to your theme that may be interfering with the WP conditional tags.
+There were TWO important changes to how your Widget Logic code is evaluated. There is a new default 'Load logic' point of 'after query variables set'. For most people this should be better, but you could try reverting to the old default 'when plugin starts'.
 
-The most common sources of problems are:
+Also by default your widget logic now only executes once (at the 'Load logic' point, see above). Again, I expect this will suit most of the people most of the time, but maybe your site works better the old way. Tick the new 'Evaluate widget logic more than once' option.
 
-* The logic text on one of your widgets is invalid PHP
-* Your theme performs custom queries before calling the dynamic sidebar -- if so, try ticking the `wp_reset_query` option.
+= What can I try if it's not working? =
 
-= Use 'wp_reset_query' fix option isn't working properly any more =
+* Switch to the default theme. If the problem goes away, your theme may be interfering with the WP conditional tags or how widgets work
+* Try the `wp_reset_query` option. If your theme performs custom queries before calling the dynamic sidebar this might help.
+* Try a different 'Load logic' point. Most wordpress conditional tags only work 'when query variables set', but some plugins may require evaluation earlier or later.
+* The 'Evaluate widget logic more than once' option may be needed if you have to use an early 'Load logic' point.
 
-In version 0.50 I made some fundamental changes to how Widget Logic works. The result was that the wp_reset_query was less targeted in the code. If lots of people find this problematic I will look at a general solution, but the main workround is to put wp_reset_query() into your code just before calling a dynamic sidebar.
+
+= I'm getting errors that read like "PHP Parse error… … eval()'d code on line 1" =
+
+You have a PHP syntax error in one of your widget's Widget Logic fields. Review them for errors. You might find it easiest to check by using 'Export options' and reading the code there (Though be aware that single and double quotes are escaped with multiple backslash characters.)
+
+If you are having trouble finding the syntax error, a simple troubleshooting method is to use 'Export options' to keep a copy and then blank each Widget Logic field in turn until the problem goes. Once you've identified the problematic code, you can restore the rest with 'Import options'.
+
+= It's causing problems with Woo Commerce / other popular plugin =
+
+This is often, not always, fixed by trying the different 'Load Logic' options. The 'after query variables set' option looks like it might be a better default, try it.
 
 = What's this stuff in my sidebar when there are no widgets? =
 
@@ -73,6 +87,8 @@ Your options, if you want this default sidebar content gone, are to either edit 
 There is some confusion between the [Main Page and the front page](http://codex.wordpress.org/Conditional_Tags#The_Main_Page). If you want a widget on your 'front page' whether that is a static page or a set of posts, use is_front_page(). If it is a page using is_page(x) does not work. If your 'front page' is a page and not a series of posts, you can still use is_home() to get widgets on that main posts page (as defined in Admin > Settings > Reading).
 
 = Logic using is_page() doesn't work =
+
+I believe this is fixed in 0.58. Let me know if that is not the case.
 
 If your theme calls the sidebar after the loop you should find that the wp_reset_query option fixes things. This problem is explained on the [is_page codex page](http://codex.wordpress.org/Function_Reference/is_page#Cannot_Be_Used_Inside_The_Loop).
 
@@ -107,7 +123,7 @@ Tighten up your definitions with PHPs 'logical AND' &&, for example:
 == Screenshots ==
 
 1. The 'Widget logic' field at work in standard widgets.
-2. The `widget_content` filter, `wp_reset_query` option and 'load logic point' options are at the foot of the widget admin page. You can also export and import your site's WL options for safe-keeping.
+2. The `widget_content` filter, `wp_reset_query` option, 'don't cache results' option and 'load logic point' options are at the foot of the widget admin page. You can also export and import your site's WL options for safe-keeping.
 
 == Writing Logic Code ==
 
@@ -183,6 +199,9 @@ function make_alternating_widget_styles($content='')
 
 
 == Changelog ==
+
+= 0.58 =
+A new default load logic point attached to the action 'parse_query'. By default the widget logic is only evaluated once.
 
 Translation: Ukrainian by Roman Sulym
 
