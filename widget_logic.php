@@ -18,7 +18,7 @@ global $wl_options;
 $wl_load_points=array(	'plugins_loaded'    =>	__( 'when plugin starts', 'widget-logic' ),
                         'after_setup_theme' =>	__( 'after theme loads', 'widget-logic' ),
                         'wp_loaded'         =>	__( 'when all PHP loaded', 'widget-logic' ),
-                        'parse_query'		=>	__( 'when query variables set (default)', 'widget-logic'),
+                        'parse_query'		=>	__( 'after query variables set (default)', 'widget-logic'),
                         'wp_head'           =>	__( 'during page header', 'widget-logic' )
 					);
 

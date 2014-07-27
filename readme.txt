@@ -62,7 +62,7 @@ Also by default your widget logic now only executes once (at the 'Load logic' po
 
 * Switch to the default theme. If the problem goes away, your theme may be interfering with the WP conditional tags or how widgets work
 * Try the `wp_reset_query` option. If your theme performs custom queries before calling the dynamic sidebar this might help.
-* Try a different 'Load logic' point. Most wordpress conditional tags only work 'when query variables set', but some plugins may require evaluation earlier or later.
+* Try a different 'Load logic' point. Most wordpress conditional tags only work 'after query variables set', but some plugins may require evaluation earlier or later.
 * The 'Evaluate widget logic more than once' option may be needed if you have to use an early 'Load logic' point.
 
 
