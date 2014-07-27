@@ -271,7 +271,7 @@ function widget_logic_filter_sidebars_widgets($sidebars_widgets)
 	if ( !empty( $wl_options['widget_logic-options-wp_reset_query'] ) && ( $wl_options['widget_logic-options-wp_reset_query'] == 'checked' ) && empty( $wp_reset_query_is_done ) )
 	{	wp_reset_query(); $wp_reset_query_is_done=true;	}
 
-	if (empty($wl_sidebars_widgets) || ( array_key_exists($wl_options, "widget_logic-options-dont-cache-logic") && $wl_options["widget_logic-options-dont-cache-logic"] == 'checked'))
+	if (empty($wl_sidebars_widgets) || ( array_key_exists("widget_logic-options-dont-cache-logic", $wl_options) && $wl_options["widget_logic-options-dont-cache-logic"] == 'checked'))
 	{
 		// loop through every widget in every sidebar (barring 'wp_inactive_widgets') checking WL for each one
 		foreach($sidebars_widgets as $widget_area => $widget_list)
