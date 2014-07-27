@@ -184,6 +184,8 @@ function make_alternating_widget_styles($content='')
 
 == Changelog ==
 
+Translation: Ukrainian by Roman Sulym
+
 = 0.57 =
 Small fixes to satisfy some define('WP_DEBUG', true) errors
 

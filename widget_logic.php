@@ -3,7 +3,7 @@
 Plugin Name:    Widget Logic
 Plugin URI:     http://wordpress.org/extend/plugins/widget-logic/
 Description:    Control widgets with WP's conditional tags is_home etc
-Version:        0.57
+Version:        0.58
 Author:         Alan Trewartha
 Author URI:     http://freakytrigger.co.uk/author/alan/
  
@@ -18,6 +18,7 @@ global $wl_options;
 $wl_load_points=array(	'plugins_loaded'    =>	__( 'when plugin starts (default)', 'widget-logic' ),
                         'after_setup_theme' =>	__( 'after theme loads', 'widget-logic' ),
                         'wp_loaded'         =>	__( 'when all PHP loaded', 'widget-logic' ),
+                        'parse_query'		=>	__( 'when query variables set', 'widget-logic'),
                         'wp_head'           =>	__( 'during page header', 'widget-logic' )
 					);
 
@@ -141,6 +142,7 @@ function widget_logic_expand_control()
 	{	$wl_options['widget_logic-options-filter']=$_POST['widget_logic-options-filter'];
 		$wl_options['widget_logic-options-wp_reset_query']=$_POST['widget_logic-options-wp_reset_query'];
 		$wl_options['widget_logic-options-load_point']=$_POST['widget_logic-options-load_point'];
+		$wl_options['widget_logic-options-dont-cache-logic']=$_POST['widget_logic-options-dont-cache-logic'];
 	}
 
 
@@ -181,6 +183,11 @@ function widget_logic_options_control()
 				<li><label for="widget_logic-options-wp_reset_query" title="<?php _e('Resets a theme\'s custom queries before your Widget Logic is checked', 'widget-logic'); ?>">
 					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-wp_reset_query'])) echo "checked" ?> />
 					<?php _e('Use \'wp_reset_query\' fix', 'widget-logic'); ?>
+					</label>
+				</li>
+				<li><label for="widget_logic-options-dont-cache-logic" title="<?php _e('Re-evaluates widget logic every time the sidebars_widgets filter is called', 'widget-logic'); ?>">
+					<input id="widget_logic-options-wp_reset_query" name="widget_logic-options-wp_reset_query" type="checkbox" value="checked" class="checkbox" <?php if (isset($wl_options['widget_logic-options-wp_reset_query'])) echo "checked" ?> />
+					<?php _e('Don\'t cache widget logic results', 'widget-logic'); ?>
 					</label>
 				</li>
 				<li><label for="widget_logic-options-load_point" title="<?php _e('Delays widget logic code being evaluated til various points in the WP loading process', 'widget-logic'); ?>"><?php _e('Load logic', 'widget-logic'); ?>
@@ -258,36 +265,40 @@ function wl_charity($links, $file)
 
 // CALLED ON 'sidebars_widgets' FILTER
 function widget_logic_filter_sidebars_widgets($sidebars_widgets)
-{	global $wp_reset_query_is_done, $wl_options;
+{	global $wp_reset_query_is_done, $wl_sidebars_widgets, $wl_options;
 
 	// reset any database queries done now that we're about to make decisions based on the context given in the WP query for the page
 	if ( !empty( $wl_options['widget_logic-options-wp_reset_query'] ) && ( $wl_options['widget_logic-options-wp_reset_query'] == 'checked' ) && empty( $wp_reset_query_is_done ) )
 	{	wp_reset_query(); $wp_reset_query_is_done=true;	}
 
-	// loop through every widget in every sidebar (barring 'wp_inactive_widgets') checking WL for each one
-	foreach($sidebars_widgets as $widget_area => $widget_list)
-	{	if ($widget_area=='wp_inactive_widgets' || empty($widget_list)) continue;
+	if (empty($wl_sidebars_widgets) || ( array_key_exists($wl_options, "widget_logic-options-dont-cache-logic") && $wl_options["widget_logic-options-dont-cache-logic"] == 'checked'))
+	{
+		// loop through every widget in every sidebar (barring 'wp_inactive_widgets') checking WL for each one
+		foreach($sidebars_widgets as $widget_area => $widget_list)
+		{	if ($widget_area=='wp_inactive_widgets' || empty($widget_list)) continue;
 
-		foreach($widget_list as $pos => $widget_id)
-		{	if (empty($wl_options[$widget_id]))  continue;
-			$wl_value=stripslashes(trim($wl_options[$widget_id]));
-			if (empty($wl_value))  continue;
+			foreach($widget_list as $pos => $widget_id)
+			{	if (empty($wl_options[$widget_id]))  continue;
+				$wl_value=stripslashes(trim($wl_options[$widget_id]));
+				if (empty($wl_value))  continue;
 
-			$wl_value=apply_filters( "widget_logic_eval_override", $wl_value );
-			if ($wl_value===false)
-			{	unset($sidebars_widgets[$widget_area][$pos]);
-				continue;
+				$wl_value=apply_filters( "widget_logic_eval_override", $wl_value );
+				if ($wl_value===false)
+				{	unset($sidebars_widgets[$widget_area][$pos]);
+					continue;
+				}
+				if ($wl_value===true) continue;
+
+				if (stristr($wl_value,"return")===false)
+					$wl_value="return (" . $wl_value . ");";
+
+				if (!eval($wl_value))
+					unset($sidebars_widgets[$widget_area][$pos]);
 			}
-			if ($wl_value===true) continue;
-
-			if (stristr($wl_value,"return")===false)
-				$wl_value="return (" . $wl_value . ");";
-
-			if (!eval($wl_value))
-				unset($sidebars_widgets[$widget_area][$pos]);
 		}
+		$wl_sidebars_widgets=$sidebars_widgets;
 	}
-	return $sidebars_widgets;
+	return $wl_sidebars_widgets;
 }
 
 
