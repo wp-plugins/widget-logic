@@ -33,7 +33,9 @@ if (is_admin())
 }
 else
 {
-	if (	isset($wl_options['widget_logic-options-load_point']) &&
+	if (! isset($wl_options['widget_logic-options-load_point']))
+		add_action ("parse_query",'widget_logic_sidebars_widgets_filter_add');
+	else if (	isset($wl_options['widget_logic-options-load_point']) &&
 			($wl_options['widget_logic-options-load_point']!='plugins_loaded') &&
 			array_key_exists($wl_options['widget_logic-options-load_point'],$wl_load_points )
 		)
@@ -112,14 +114,17 @@ function widget_logic_expand_control()
 
 	// ADD EXTRA WIDGET LOGIC FIELD TO EACH WIDGET CONTROL
 	// pop the widget id on the params array (as it's not in the main params so not provided to the callback)
-	foreach ( $wp_registered_widgets as $id => $widget )
-	{	// controll-less widgets need an empty function so the callback function is called.
-		if (!isset($wp_registered_widget_controls[$id]))
-			wp_register_widget_control($id,$widget['name'], 'widget_logic_empty_control');
-		$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
-		$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';
-		array_push($wp_registered_widget_controls[$id]['params'],$id);	
-	}
+//	foreach ( $wp_registered_widgets as $id => $widget )
+//	{	// controll-less widgets need an empty function so the callback function is called.
+//		if (!isset($wp_registered_widget_controls[$id]))
+//			wp_register_widget_control($id,$widget['name'], 'widget_logic_empty_control');
+//		$wp_registered_widget_controls[$id]['callback_wl_redirect']=$wp_registered_widget_controls[$id]['callback'];
+//		$wp_registered_widget_controls[$id]['callback']='widget_logic_extra_control';
+//		array_push($wp_registered_widget_controls[$id]['params'],$id);	
+//	}
+	
+	// errr now use in_widget_form
+	add_action('in_widget_form', 'widget_logic_extra_control_new');
 
 
 	// UPDATE WIDGET LOGIC WIDGET OPTIONS (via accessibility mode?)
@@ -243,6 +248,20 @@ function widget_logic_extra_control()
 		if ($number==-1) {$number="__i__"; $value="";}
 		$id_disp=$wp_registered_widget_controls[$id]['id_base'].'-'.$number;
 	}
+
+	// output our extra widget logic field
+	echo "<p><label for='".$id_disp."-widget_logic'>". __('Widget logic:','widget-logic'). " <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
+}
+
+function widget_logic_extra_control_new($widget)
+{	global $wp_registered_widget_controls, $wl_options;
+
+	$id=$widget->id;
+	
+	$value = !empty( $wl_options[$id ] ) ? htmlspecialchars( stripslashes( $wl_options[$id ] ),ENT_QUOTES ) : '';
+
+
+	print_r($instance);
 
 	// output our extra widget logic field
 	echo "<p><label for='".$id_disp."-widget_logic'>". __('Widget logic:','widget-logic'). " <textarea class='widefat' type='text' name='".$id_disp."-widget_logic' id='".$id_disp."-widget_logic' >".$value."</textarea></label></p>";
